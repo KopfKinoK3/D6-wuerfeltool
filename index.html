@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D6-Würfeltool</title>
+<meta name="description" content="Allzweck-Würfelpool-Tool: 1 bis 20 W6 würfeln, Erfolgsschwelle frei einstellen, Patzer erkennen. Läuft komplett lokal im Browser, keine Installation.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #fff; color: #111; max-width: 640px; margin: 34px auto; padding: 0 20px 60px; }
+  h1 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 12.5px; color: #666; margin-bottom: 22px; line-height: 1.55; }
+
+  .sec { border: 1px solid #e2e2e2; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .sec-label { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: #999; font-weight: 700; margin-bottom: 12px; }
+
+  /* Poolgröße */
+  .pool-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .pool-row input[type=range] { flex: 1; }
+  .pool-num { width: 54px; padding: 8px 4px; border: 1px solid #ccc; border-radius: 7px; text-align: center; font-size: 15px; font-weight: 700; color: #111; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { padding: 6px 11px; border: 1px solid #ccc; border-radius: 20px; background: #fff; font-size: 12.5px; font-weight: 500; cursor: pointer; color: #444; }
+  .chip:hover { background: #f0f0f0; }
+  .chip.active { background: #111; border-color: #111; color: #fff; }
+
+  /* Regeln */
+  .rule-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f0f0f0; }
+  .rule-row:last-child { border-bottom: none; }
+  .rule-lab { font-size: 13.5px; color: #222; font-weight: 500; }
+  .rule-sub { font-size: 11px; color: #999; margin-top: 2px; }
+  .rule-ctrl { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .num-mini { width: 46px; padding: 6px 2px; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-size: 13px; color: #111; }
+  .switch { position: relative; width: 40px; height: 23px; border-radius: 20px; background: #ccc; cursor: pointer; flex-shrink: 0; transition: background .15s; }
+  .switch.on { background: #111; }
+  .switch .knob { position: absolute; top: 2px; left: 2px; width: 19px; height: 19px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  .switch.on .knob { left: 19px; }
+
+  #rollBtn { width: 100%; padding: 14px; border: 1px solid #111; border-radius: 9px; background: #111; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 16px; }
+  #rollBtn:hover { background: #333; }
+  #rollBtn:active { transform: scale(.99); }
+
+  .result { border: 1px solid #ddd; border-radius: 10px; padding: 18px; display: none; margin-bottom: 16px; }
+  .result-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; }
+  .result-title { font-size: 13px; color: #666; }
+  .badge { padding: 5px 13px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .badge-hit { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+  .badge-zero { background: #f5f5f5; color: #555; border: 1px solid #ccc; }
+  .badge-patzer { background: #fff8e1; color: #e65100; border: 1px solid #ffe082; }
+  .badge-crit { background: #ffebee; color: #7f0000; border: 1px solid #ef9a9a; }
+
+  .dice-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; min-height: 46px; }
+  .die { width: 44px; height: 44px; border: 1px solid #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; background: #fff; color: #333; }
+  .die.rolling { animation: shake .5s ease-in-out; }
+  .die.hit { background: #e8f5e9; border-color: #388e3c; color: #1b5e20; }
+  .die.one { background: #ffebee; border-color: #c62828; color: #7f0000; }
+  .die.miss { background: #f7f7f7; border-color: #bbb; color: #666; }
+  .die.exploded { box-shadow: 0 0 0 2px #f0a000 inset; }
+  @keyframes shake { 0%,100%{transform:rotate(0) scale(1);} 20%{transform:rotate(-10deg) scale(1.1);} 50%{transform:rotate(8deg) scale(.95);} 80%{transform:rotate(-4deg) scale(1.04);} }
+
+  .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+  .stat { flex: 1 1 70px; background: #f7f7f7; border-radius: 7px; padding: 10px 8px; text-align: center; }
+  .stat-l { font-size: 10.5px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+  .stat-v { font-size: 19px; font-weight: 700; }
+
+  .history-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .history-head button { border: none; background: none; color: #999; font-size: 11.5px; cursor: pointer; text-decoration: underline; }
+  .history-list { display: flex; flex-direction: column; gap: 0; max-height: 260px; overflow-y: auto; }
+  .h-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f2f2f2; font-size: 12.5px; }
+  .h-row:last-child { border-bottom: none; }
+  .h-dice { color: #999; font-family: ui-monospace, monospace; font-size: 11.5px; }
+  .h-empty { font-size: 12.5px; color: #aaa; padding: 6px 0; }
+
+  footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid #eee; font-size: 10.5px; line-height: 1.6; color: #b0b0b0; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>🎲 D6-Würfeltool</h1>
+<div class="subtitle">Allzweck-Würfelpool: bis zu 20 × W6 würfeln, Erfolgsschwelle frei einstellen, Patzer optional erkennen. Läuft komplett lokal im Browser — keine Installation, kein Server, keine Datenübertragung.</div>
+
+<div class="sec">
+  <div class="sec-label">Poolgröße</div>
+  <div class="pool-row">
+    <input type="range" id="poolRange" min="1" max="20" value="6">
+    <input type="number" id="poolNum" class="pool-num" min="1" max="20" value="6">
+  </div>
+  <div class="chips" id="poolChips"></div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Regeln</div>
+
+  <div class="rule-row">
+    <div>
+      <div class="rule-lab">Erfolg ab Augenzahl</div>
+      <div class="rule-sub">Würfel mit diesem Wert oder höher zählen als Erfolg</div>
+    </div>
+    <div class="rule-ctrl">
+      <input type="number" id="threshold" class="num-mini" min="2" max="6" value="5">
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div>
+      <div class="rule-lab">Patzer-Regel</div>
+      <div class="rule-sub">Patzer, wenn mehr als die Hälfte der Würfel eine 1 zeigt</div>
+    </div>
+    <div class="rule-ctrl">
+      <div class="switch on" id="patzerSwitch"><div class="knob"></div></div>
+    </div>
+  </div>
+
+  <div class="rule-row">
+    <div>
+      <div class="rule-lab">Explodierende Sechsen</div>
+      <div class="rule-sub">Jede gewürfelte 6 löst einen zusätzlichen Wurf aus</div>
+    </div>
+    <div class="rule-ctrl">
+      <div class="switch" id="explodeSwitch"><div class="knob"></div></div>
+    </div>
+  </div>
+</div>
+
+<button id="rollBtn">Würfeln</button>
+
+<div class="result" id="result">
+  <div class="result-top">
+    <div class="result-title" id="resultTitle">—</div>
+    <div class="badge" id="resultBadge">…</div>
+  </div>
+  <div class="dice-wrap" id="diceWrap"></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-l">Würfel</div><div class="stat-v" id="statPool">0</div></div>
+    <div class="stat"><div class="stat-l">Erfolge</div><div class="stat-v" id="statHits">0</div></div>
+    <div class="stat"><div class="stat-l">Einsen</div><div class="stat-v" id="statOnes">0</div></div>
+    <div class="stat"><div class="stat-l">Summe</div><div class="stat-v" id="statSum">0</div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="history-head">
+    <div class="sec-label" style="margin-bottom:0">Verlauf</div>
+    <button id="clearHistory">leeren</button>
+  </div>
+  <div class="history-list" id="historyList">
+    <div class="h-empty">Noch keine Würfe.</div>
+  </div>
+</div>
+
+<footer>D6-Würfeltool — generisches Würfelpool-Werkzeug, unabhängig von einem bestimmten Regelwerk. Läuft rein lokal im Browser.</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  const STORAGE_KEY = 'd6wuerfeltool_settings_v1';
+  const HISTORY_KEY = 'd6wuerfeltool_history_v1';
+  const MAX_HISTORY = 30;
+  const CHIP_SIZES = [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20];
+
+  const poolRange = $('poolRange'), poolNum = $('poolNum'), poolChips = $('poolChips');
+  const thresholdInput = $('threshold');
+  const patzerSwitch = $('patzerSwitch'), explodeSwitch = $('explodeSwitch');
+  const rollBtn = $('rollBtn');
+  const resultEl = $('result'), resultTitle = $('resultTitle'), resultBadge = $('resultBadge');
+  const diceWrap = $('diceWrap');
+  const statPool = $('statPool'), statHits = $('statHits'), statOnes = $('statOnes'), statSum = $('statSum');
+  const historyList = $('historyList'), clearHistoryBtn = $('clearHistory');
+
+  function rand6() { return Math.floor(Math.random() * 6) + 1; }
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  // ---- Poolgröße-Chips ----
+  CHIP_SIZES.forEach(n => {
+    const c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'chip';
+    c.textContent = n + 'W6';
+    c.dataset.n = n;
+    c.onclick = () => setPool(n);
+    poolChips.appendChild(c);
+  });
+
+  function refreshChips(n) {
+    poolChips.querySelectorAll('.chip').forEach(c => {
+      c.classList.toggle('active', Number(c.dataset.n) === n);
+    });
+  }
+
+  function setPool(n) {
+    n = clamp(Math.round(n) || 1, 1, 20);
+    poolRange.value = n;
+    poolNum.value = n;
+    refreshChips(n);
+    saveSettings();
+  }
+
+  poolRange.addEventListener('input', () => setPool(Number(poolRange.value)));
+  poolNum.addEventListener('input', () => setPool(Number(poolNum.value)));
+
+  thresholdInput.addEventListener('change', () => {
+    thresholdInput.value = clamp(Number(thresholdInput.value) || 5, 2, 6);
+    saveSettings();
+  });
+
+  function toggleSwitch(el) {
+    el.classList.toggle('on');
+    saveSettings();
+  }
+  patzerSwitch.addEventListener('click', () => toggleSwitch(patzerSwitch));
+  explodeSwitch.addEventListener('click', () => toggleSwitch(explodeSwitch));
+
+  // ---- Einstellungen speichern/laden (nur lokale Browser-Einstellungen, keine Daten verlassen das Gerät) ----
+  function saveSettings() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        pool: Number(poolNum.value),
+        threshold: Number(thresholdInput.value),
+        patzer: patzerSwitch.classList.contains('on'),
+        explode: explodeSwitch.classList.contains('on')
+      }));
+    } catch (e) { /* localStorage evtl. nicht verfügbar — kein Problem, Tool funktioniert trotzdem */ }
+  }
+
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const s = JSON.parse(raw);
+      if (s.pool) setPool(s.pool);
+      if (s.threshold) thresholdInput.value = clamp(s.threshold, 2, 6);
+      if (s.patzer === false) patzerSwitch.classList.remove('on');
+      if (s.explode) explodeSwitch.classList.add('on');
+    } catch (e) { /* ignorieren */ }
+  }
+
+  // ---- Verlauf ----
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+  function saveHistory(list) {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, MAX_HISTORY))); }
+    catch (e) { /* ignorieren */ }
+  }
+  function renderHistory() {
+    const list = loadHistory();
+    if (!list.length) {
+      historyList.innerHTML = '<div class="h-empty">Noch keine Würfe.</div>';
+      return;
+    }
+    historyList.innerHTML = list.map(h => {
+      const label = h.crit ? '⚠ Krit. Patzer' : h.patzer ? '⚠ Patzer' : (h.hits + ' Erfolg' + (h.hits === 1 ? '' : 'e'));
+      return '<div class="h-row"><span>' + h.pool + 'W6 · ' + label + '</span><span class="h-dice">' + h.vals.join(' ') + '</span></div>';
+    }).join('');
+  }
+  clearHistoryBtn.addEventListener('click', () => { saveHistory([]); renderHistory(); });
+
+  // ---- Würfeln ----
+  function roll() {
+    const pool = clamp(Number(poolNum.value) || 1, 1, 20);
+    const threshold = clamp(Number(thresholdInput.value) || 5, 2, 6);
+    const patzerRegelAktiv = patzerSwitch.classList.contains('on');
+    const explodeOn = explodeSwitch.classList.contains('on');
+
+    let vals = [];
+    for (let i = 0; i < pool; i++) vals.push(rand6());
+
+    // Explodierende Sechsen: jede 6 löst einen weiteren Würfel aus (mit Sicherheitsgrenze gegen Endlosschleifen)
+    if (explodeOn) {
+      let toRoll = vals.filter(v => v === 6).length, guard = 0;
+      while (toRoll > 0 && guard < 200) {
+        guard++;
+        const extra = [];
+        for (let i = 0; i < toRoll; i++) extra.push(rand6());
+        vals = vals.concat(extra);
+        toRoll = extra.filter(v => v === 6).length;
+      }
+    }
+
+    resultEl.style.display = 'block';
+    resultTitle.textContent = vals.length + 'W6 · Erfolg ab ' + threshold;
+    resultBadge.textContent = '…';
+    resultBadge.className = 'badge';
+    diceWrap.innerHTML = vals.map(() => '<span class="die rolling">' + faces[Math.floor(Math.random() * 6)] + '</span>').join('');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    setTimeout(() => {
+      const dieEls = diceWrap.querySelectorAll('.die');
+      let hits = 0, ones = 0, sum = 0;
+      vals.forEach((v, i) => {
+        sum += v;
+        const el = dieEls[i];
+        el.textContent = faces[v - 1];
+        el.classList.remove('rolling');
+        if (v >= threshold) { hits++; el.classList.add('hit'); }
+        else if (v === 1) { ones++; el.classList.add('one'); }
+        else { el.classList.add('miss'); }
+        if (explodeOn && v === 6) el.classList.add('exploded');
+      });
+
+      const patzer = patzerRegelAktiv && pool > 0 && ones * 2 > pool;
+      const crit = patzer && hits === 0;
+
+      if (crit) { resultBadge.className = 'badge badge-crit'; resultBadge.textContent = '⚠ Kritischer Patzer'; }
+      else if (patzer) { resultBadge.className = 'badge badge-patzer'; resultBadge.textContent = '⚠ Patzer (' + hits + (hits === 1 ? ' Erfolg' : ' Erfolge') + ')'; }
+      else if (hits > 0) { resultBadge.className = 'badge badge-hit'; resultBadge.textContent = hits + (hits === 1 ? ' Erfolg' : ' Erfolge'); }
+      else { resultBadge.className = 'badge badge-zero'; resultBadge.textContent = 'kein Erfolg'; }
+
+      statPool.textContent = vals.length;
+      statHits.textContent = hits;
+      statOnes.textContent = ones;
+      statSum.textContent = sum;
+
+      const list = loadHistory();
+      list.unshift({ pool: vals.length, hits, ones, sum, patzer, crit, vals: vals.slice(0, 20) });
+      saveHistory(list);
+      renderHistory();
+    }, 480);
+  }
+
+  rollBtn.addEventListener('click', roll);
+
+  // ---- Start ----
+  refreshChips(Number(poolNum.value));
+  loadSettings();
+  renderHistory();
+})();
+</script>
+
+</body>
+</html>
