@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadowrun 2036 — Videos</title>
+<meta name="description" content="Alle Folgen und Shorts zur Shadowrun-2036-Kampagne 'Blackrock' von Tiny Tactic Tales, chronologisch sortiert.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #fff; color: #111; max-width: 720px; margin: 34px auto; padding: 0 20px 60px; }
+  .nav { font-size: 12px; margin-bottom: 18px; }
+  .nav a { color: #666; text-decoration: none; }
+  .nav a:hover { color: #111; text-decoration: underline; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 12.5px; color: #666; margin-bottom: 24px; line-height: 1.55; }
+
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: #999; font-weight: 700; margin: 30px 0 12px; }
+
+  .ep-list { display: flex; flex-direction: column; gap: 10px; }
+  .ep-card { display: flex; gap: 12px; align-items: center; border: 1px solid #e2e2e2; border-radius: 10px; padding: 8px; text-decoration: none; color: inherit; transition: border-color .1s, background .1s; }
+  .ep-card:hover { border-color: #999; background: #fafafa; }
+  .ep-thumb { width: 120px; height: 68px; object-fit: cover; border-radius: 6px; flex-shrink: 0; background: #eee; }
+  .ep-num { font-size: 11px; color: #aaa; font-weight: 600; width: 22px; flex-shrink: 0; text-align: right; }
+  .ep-title { font-size: 13.5px; font-weight: 500; line-height: 1.4; }
+
+  .shorts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .short-card { display: block; text-decoration: none; color: inherit; border: 1px solid #e2e2e2; border-radius: 10px; overflow: hidden; transition: border-color .1s; }
+  .short-card:hover { border-color: #999; }
+  .short-thumb { width: 100%; aspect-ratio: 9/16; object-fit: cover; display: block; background: #eee; }
+  .short-title { font-size: 12px; padding: 8px; line-height: 1.4; }
+
+  .channel-cta { margin: 30px 0; padding: 14px 16px; border: 1px solid #e2e2e2; border-radius: 10px; background: #fafafa; font-size: 13px; }
+  .channel-cta a { color: #111; font-weight: 600; }
+
+  footer.legal { margin-top: 40px; padding-top: 14px; border-top: 1px solid #eee; font-size: 9.5px; line-height: 1.6; color: #b0b0b0; }
+  footer.legal b { font-weight: 600; color: #909090; }
+</style>
+</head>
+<body>
+
+<div class="nav"><a href="index.html">🎲 D6-Würfeltool</a> · <a href="shadowrun-2036.html">Shadowrun 2036 (Videos)</a></div>
+
+<h1>Shadowrun 2036</h1>
+<div class="subtitle">Alle Folgen der Actual-Play-Kampagne "Blackrock" von <a href="https://www.youtube.com/@TinyTacticTales" target="_blank" rel="noopener">Tiny Tactic Tales</a>, chronologisch sortiert — von der ersten Vorstellungsfolge bis zur aktuellen Staffel.</div>
+
+<h2>Folgen</h2>
+<div class="ep-list" id="episodes"></div>
+
+<h2>Shorts</h2>
+<div class="shorts-grid" id="shorts"></div>
+
+<div class="channel-cta">Alle Folgen, Livestreams und mehr gibt's auf dem Kanal <a href="https://www.youtube.com/@TinyTacticTales" target="_blank" rel="noopener">Tiny Tactic Tales</a> auf YouTube.</div>
+
+<footer class="legal">
+  Diese Seite ist ein reines Fan-Projekt zur Sammlung eigener Actual-Play-Videos und dient keinen kommerziellen Zwecken.<br><br>
+  <b>Marken &amp; Urheberrechte:</b> <i>Shadowrun</i> ist eine eingetragene Handelsmarke (Warenzeichen) der Topps Company, Inc.<br>
+  <b>Lizenznehmer:</b> Die Spielinhalte, Regeln und Begriffe basieren auf der deutschen Ausgabe von <a href="https://pegasus.de/" target="_blank" rel="noopener" style="color:#b0b0b0">Pegasus Spiele</a> unter Lizenz von Catalyst Game Labs und der Topps Company, Inc.<br>
+  <b>Ausschluss:</b> Diese Seite steht in keiner offiziellen Verbindung zu Pegasus Spiele, Catalyst Game Labs oder der Topps Company, Inc. Der Betreiber erhebt keinerlei Anspruch auf die verwendeten spielspezifischen Begriffe oder das Regelsystem.
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // Chronologische Reihenfolge (älteste zuerst) — Titel wie auf YouTube, Video-IDs aus der Playlist
+  // https://www.youtube.com/playlist?list=PL-CEzGRfBYru7azjh9je0g7DTZa_5aBsB
+  var episodes = [
+    { id: 'SyJHsef4SXQ', title: 'Shadowrun 2036: Blackrock-Musik-Trailer' },
+    { id: 'XmZMVFvFf4A', title: 'Ep. -4, Ralf. Shadowrun 2036: Blackrock, Deutschland in den Schatten' },
+    { id: 'ZxYZk_eRKoc', title: 'Ep. -3, Johannes. Shadowrun 2036: Blackrock, Deutschland in den Schatten' },
+    { id: 'GHOH6jpArbA', title: '(A) Ep. 0, Spielerbogen zu Shadowrun 2036, eine Bonusfolge' },
+    { id: 'RleohSGQaxw', title: 'Ep. -2, Frank. Shadowrun 2036: Blackrock, Deutschland in den Schatten' },
+    { id: 'xwiahgWs-7Q', title: 'S1E1: 2026 - Die VR-Arkade-Killer in Essen-Kettwig: Shadowrun 2036' },
+    { id: 'ambezYvkiV0', title: 'S1E2: Evelyn ruft = Essen, Eifel und Serverracks aus Oberhausen: Shadowrun 2036' },
+    { id: '-Vs9YRShkpc', title: 'Ep. -1, Woody. Shadowrun 2036: Blackrock, Deutschland in den Schatten' },
+    { id: 'SKnnlqEz7gs', title: 'S1E3: ///zitrone. wohnt.kocht - PW 4, 8, 15, 16, 23, 42 - SEC OFF 2200-2230: Shadowrun 2036' },
+    { id: '3vvRwf28aYI', title: 'S1E4: Der blasse Tentakelkopf-Mann: Shadowrun 2036' },
+    { id: 'Zi6tWJ2gP9c', title: 'S1E5: Auf der Flucht oder Petra ermittelt & Woodys Schimanski-Standpauke, Shadowrun 2036' },
+    { id: 'MF7mj1suhFw', title: 'S1E6: Knapp entkommen & neue Heimat Horster Mühle: Shadowrun 2036' },
+    { id: 'LUmIYbt-bDg', title: 'Bericht über die Mordermittlungen: Kettwig.TV, 4.3.2036 um 8 Uhr' },
+    { id: '5GS7xa-2j5I', title: 'Auftraggeber: Herr Ivanov' },
+    { id: 'gx7ESZ-0ctE', title: 'Rolf Schimanski erhält einen Anschiss - SL-Reaktion' },
+    { id: 'UnG0SXFnWdk', title: 'VR-Zockerstube in Kettwig - Wie Shadowrun 2036 begann' },
+    { id: 'Ole3nnTNXxw', title: 'Vor der Saeder-Krupp-Arkologie in Reallife' },
+    { id: 'R2RsDWKUBzo', title: 'S2E7: Eine BITTE, die man nicht ausschlagen kann & Sonderermittler Dr. Reuss: Shadowrun 2036' },
+    { id: 'PQqbYe227-M', title: 'Neues zum Hügeloss-Mörder' },
+    { id: 'wspk-TKNFro', title: 'Büdchen-Überfall in Bredeney' },
+    { id: '9nKeTwXfiDw', title: 'Gefallen für Gefallen - Der SL-Pate' },
+    { id: 'GUOYS-pzRkE', title: 'Kripo ruft an: Wir haben Deinen Einbruch gefilmt' },
+    { id: 'u8huKTebBb8', title: '(C) Gast-Vorstellung Manuel, Shadowrun 2036: Blackrock, Deutschland in den Schatten' },
+    { id: '-pSmpr-VWKo', title: '(B) Gast-Vorstellung Petra, Shadowrun 2036: Blackrock, Deutschland in den Schatten' },
+    { id: '1XdzrFJ1ztw', title: 'S2E8: Das B-Team beim Büdchen-Hoppen & Burgerschmiede ftw (neueste Folge)' }
+  ];
+
+  // Shorts zur Kampagne (zwei kanalfremde Shorts ohne SR2036-Bezug bewusst ausgelassen)
+  var shorts = [
+    { id: 'UnG0SXFnWdk', title: 'VR-Zockerstube in Kettwig' },
+    { id: 'Ole3nnTNXxw', title: 'Vor der Saeder-Krupp-Arkologie' },
+    { id: 'GUOYS-pzRkE', title: 'Kripo ruft an' }
+  ];
+
+  function thumb(id) { return 'https://i.ytimg.com/vi/' + id + '/mqdefault.jpg'; }
+
+  var epHtml = episodes.map(function (e, i) {
+    return '<a class="ep-card" href="https://www.youtube.com/watch?v=' + e.id + '" target="_blank" rel="noopener">' +
+      '<span class="ep-num">' + (i + 1) + '</span>' +
+      '<img class="ep-thumb" src="' + thumb(e.id) + '" alt="" loading="lazy">' +
+      '<span class="ep-title">' + e.title + '</span>' +
+      '</a>';
+  }).join('');
+  document.getElementById('episodes').innerHTML = epHtml;
+
+  var shortsHtml = shorts.map(function (s) {
+    return '<a class="short-card" href="https://www.youtube.com/shorts/' + s.id + '" target="_blank" rel="noopener">' +
+      '<img class="short-thumb" src="' + thumb(s.id) + '" alt="" loading="lazy">' +
+      '<span class="short-title">' + s.title + '</span>' +
+      '</a>';
+  }).join('');
+  document.getElementById('shorts').innerHTML = shortsHtml;
+})();
+</script>
+
+</body>
+</html>
