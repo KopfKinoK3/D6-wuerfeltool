@@ -35,6 +35,12 @@ Die Standardwerte (Erfolg ab 5, Patzer-Schwelle bei mehr als der Hälfte Einsen)
 
 Das Tool nutzt ausschließlich den `localStorage` deines Browsers. Es gibt keinen Server, keine Cookies, kein Tracking.
 
+## Über dieses Tool
+
+Entstanden aus dem Bedarf an einem schnellen, werbefreien Würfelpool-Rechner für Tabletop-Runden mit W6-basierten Erfolgssystemen — ohne Server, ohne Tracking, ohne Account. Feedback und Pull Requests willkommen.
+
+— [KopfKinoK3](https://github.com/KopfKinoK3) · [YouTube: Tiny Tactic Tales](https://www.youtube.com/@TinyTacticTales)
+
 ## Lizenz
 
 MIT-Lizenz — frei nutzbar, änderbar und weiterverteilbar mit Namensnennung. Siehe [LICENSE](LICENSE).
