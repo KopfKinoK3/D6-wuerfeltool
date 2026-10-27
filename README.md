@@ -31,9 +31,9 @@ Ein schlankes, generisches Würfelpool-Tool für W6-basierte Systeme. Poolgröß
 
 Die Standardwerte (Erfolg ab 5, Patzer-Schwelle bei mehr als der Hälfte Einsen) orientieren sich an einer verbreiteten, generischen Würfelpool-Mechanik und sind an kein bestimmtes Regelwerk gebunden. Beide Werte lassen sich frei anpassen.
 
-## 3D-Player für GLB-Karten
+## SR-3D-Player für GLB-Karten
 
-`3d-player.html` ist ein eigenständiger Betrachter für 3D-Karten im GLB-Format, gedacht für die Spieler am Tisch. Er hat keine Verbindung zum Würfeltool.
+`3d-player.html` (SR-3D-Player) ist ein eigenständiger Betrachter für 3D-Karten im GLB-Format, gedacht für die Spieler am Tisch. Er hat keine Verbindung zum Würfeltool.
 
 **Start:** `3d-player.html` per Doppelklick im Browser öffnen (Safari ab 16.4, Chrome, Firefox). Dann „Karte laden“ wählen oder eine `.glb`-Datei ins Fenster ziehen. Die Datei wird nur lokal gelesen, nichts wird hochgeladen. Beim ersten Öffnen braucht der Browser Internet, weil three.js in fester Version (0.185.1) von jsDelivr geladen wird.
 

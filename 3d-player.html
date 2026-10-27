@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>3D-Player</title>
-<meta name="description" content="Schlanker 3D-Player für GLB-Karten: Blickwinkel aus der Datei anfahren, eingebaute Animationen abspielen. Läuft lokal im Browser, nichts wird hochgeladen.">
+<title>SR-3D-Player</title>
+<meta name="description" content="SR-3D-Player, schlanker Betrachter für GLB-Karten: Blickwinkel aus der Datei anfahren, eingebaute Animationen abspielen. Läuft lokal im Browser, nichts wird hochgeladen.">
 <style>
   /* Farben wie im Würfeltool (index.html): weiß, Schwarz als Akzent, graue Ränder */
   :root {
@@ -16,9 +16,12 @@
   body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text);
          display: flex; flex-direction: column; overflow: hidden; }
 
-  header { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--rand); flex-wrap: wrap; }
-  header h1 { font-size: 15px; font-weight: 700; }
-  #kartenName { font-size: 12.5px; color: var(--leise); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Kopf in drei Spalten: Name links, Steuerung mittig, Laden rechts */
+  header { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 6px 16px; padding: 8px 12px; border-bottom: 1px solid var(--rand); }
+  .kopfLinks { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+  header h1 { font-size: 15px; font-weight: 700; white-space: nowrap; }
+  #kartenName { font-size: 12.5px; color: var(--leise); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #btnLaden { justify-self: end; }
   .knopf { padding: 7px 12px; border: 1px solid var(--knopf-rand); border-radius: 7px; background: var(--panel); color: var(--text);
            font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
   .knopf:hover { background: var(--hover); }
@@ -49,7 +52,12 @@
   .liste .taste { color: var(--leise); font-size: 11.5px; }
   .liste .knopf.an .taste { color: var(--akzent-text); }
   .hinweis { font-size: 12px; color: var(--leise); line-height: 1.5; }
-  .tasten { font-size: 12px; color: var(--leise); line-height: 1.7; }
+  .tasten { font-size: 12px; color: var(--leise); line-height: 1.7; text-align: center; white-space: nowrap; }
+  /* Mittleres Fenster: Steuerung in eine zweite Kopfzeile */
+  @media (max-width: 1100px) {
+    header { grid-template-columns: 1fr auto; }
+    .tasten { grid-column: 1 / -1; grid-row: 2; white-space: normal; }
+  }
   kbd { font: inherit; font-size: 11px; border: 1px solid var(--rand); border-radius: 4px; padding: 0 4px; color: var(--text); background: #f7f7f7; }
 
   /* Schmales Fenster: Seitenleiste unter die Bühne */
@@ -59,7 +67,7 @@
     .liste { flex-direction: row; flex-wrap: wrap; }
     .liste .knopf { width: auto; }
     .liste .taste { display: none; }
-    #tastenHilfe { display: none; }
+    .tasten { display: none; }
   }
 </style>
 <script type="importmap">
@@ -73,8 +81,14 @@
 </head>
 <body>
 <header>
-  <h1>3D-Player</h1>
-  <span id="kartenName">keine Karte geladen</span>
+  <div class="kopfLinks">
+    <h1>SR-3D-Player</h1>
+    <span id="kartenName">keine Karte geladen</span>
+  </div>
+  <p class="tasten">
+    Maus links drehen, rechts schieben, Rad zoomen<br>
+    <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> fahren · <kbd>-</kbd> / rechtes <kbd>⇧</kbd> drehen · <kbd>1</kbd> bis <kbd>9</kbd> Station · <kbd>0</kbd> Gesamtansicht
+  </p>
   <button class="knopf haupt" id="btnLaden">Karte laden</button>
   <input type="file" id="datei" accept=".glb,model/gltf-binary" hidden>
 </header>
@@ -96,17 +110,6 @@
       <h2>Animationen</h2>
       <div class="liste" id="animationen"></div>
       <p class="hinweis" id="animationenHinweis">Noch keine Karte geladen.</p>
-    </section>
-    <section id="tastenHilfe">
-      <h2>Steuerung</h2>
-      <p class="tasten">
-        Maus links: drehen<br>
-        Maus rechts: schieben<br>
-        Rad: zoomen<br>
-        <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> über den Boden fahren<br>
-        <kbd>-</kbd> nach links drehen, rechtes <kbd>⇧</kbd> nach rechts<br>
-        <kbd>1</kbd> bis <kbd>9</kbd> Station, <kbd>0</kbd> Gesamtansicht
-      </p>
     </section>
   </aside>
 </main>
