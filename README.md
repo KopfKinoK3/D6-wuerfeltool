@@ -71,6 +71,20 @@ Auf dem Handy oder Tablet: ein Finger dreht, zwei Finger zoomen und schieben. Be
 python3 -m http.server 8000
 ```
 
+## Beispielkarte: Burg Altendorf
+
+Im Ordner [`karten/`](karten/) liegt `Burgaltendorf.glb`, eine Beispielkarte zum Ausprobieren des Players. Sie zeigt die Burg Altendorf in Essen-Burgaltendorf mit Burgruine, Graben, Café, Haltestellenhaus, Supermarkt und Busbahnhof. Es ist ein vereinfachtes Fan-Modell für die Kampagne Shadowrun 2036 "Blackrock", nicht maßstabsgetreu.
+
+**Testen:** `karten/Burgaltendorf.glb` herunterladen (in der GitHub-Dateiansicht oben rechts "Download raw file"), den [SR-3D-Player](https://kopfkinok3.github.io/D6-wuerfeltool/3d-player.html) öffnen und "Karte laden" wählen oder die Datei ins Fenster ziehen.
+
+**Was Du siehst:**
+- Fünf Stationen: Turm Krone, Brücke, Café Parkplatz, Busbahnhof, Café Dachgeschoss.
+- Zwei Knöpfe: "Café Dach hebt ab" und "Kamera-Sichtfelder blendet ein". Die Sichtfelder starten ausgeblendet.
+
+**Quellen:** Fotos von Duke Jera, ein Satellitenbild nur als Lagevorlage nachgezeichnet, Maße aus Wikipedia, keine Texturen.
+
+**Hinweis:** Das Modell ist ein Spielhilfsmittel und kein Plan für echte Gebäude.
+
 ## Daten & Datenschutz
 
 Das Tool nutzt ausschließlich den `localStorage` deines Browsers. Es gibt keinen Server, keine Cookies, kein Tracking.
