@@ -21,6 +21,8 @@
   header { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(0, auto) minmax(140px, 1fr); align-items: center; gap: 6px 16px; padding: 8px 12px; border-bottom: 1px solid var(--rand); }
   .kopfLinks { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
   header h1 { font-size: 15px; font-weight: 700; white-space: nowrap; }
+  .zurueck { font-size: 12px; color: var(--leise); text-decoration: none; white-space: nowrap; }
+  .zurueck:hover { text-decoration: underline; }
   #kartenName { font-size: 12.5px; color: var(--leise); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #btnLaden { justify-self: end; grid-column: 3; }
   .knopf { padding: 7px 12px; border: 1px solid var(--knopf-rand); border-radius: 7px; background: var(--panel); color: var(--text);
@@ -80,6 +82,7 @@
 <header>
   <div class="kopfLinks">
     <h1>SR-3D-Player</h1>
+    <a href="shadowrun-2036.html" class="zurueck">← Shadowrun 2036</a>
     <span id="kartenName">keine Karte geladen</span>
   </div>
   <p class="tasten">

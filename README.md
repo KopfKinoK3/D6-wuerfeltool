@@ -4,6 +4,8 @@ Ein schlankes, generisches Würfelpool-Tool für W6-basierte Systeme. Poolgröß
 
 > Läuft komplett lokal im Browser — deine Daten verlassen das Gerät nicht.
 
+**Neu:** Der [SR-3D-Player](https://kopfkinok3.github.io/D6-wuerfeltool/3d-player.html) zeigt 3D-Karten (GLB) mit Blickwinkeln und beweglichen Teilen, siehe unten.
+
 ---
 
 ## Features
@@ -44,7 +46,7 @@ Die Standardwerte (Erfolg ab 5, Patzer-Schwelle bei mehr als der Hälfte Einsen)
 | `Kamera_<Name>` | Standort der Kamera |
 | `Kamera_<Name>_Ziel` | Punkt, auf den sie schaut (fehlt er, schaut sie 10 m entlang ihrer −Z-Achse) |
 
-Unterstriche im Namen werden zu Leerzeichen (`Kamera_Lidl_Dach` heißt „Lidl Dach“). Die Reihenfolge folgt der Datei.
+Unterstriche im Namen werden zu Leerzeichen (`Kamera_Hohes_Dach` heißt „Hohes Dach“). Die Reihenfolge folgt der Datei.
 
 **Animationen:** Jede in der GLB eingebaute Animationsspur bekommt einen Knopf zum Abspielen und Stoppen. Sie läuft in Schleife.
 
