@@ -319,7 +319,8 @@ controls.addEventListener('start', () => { fahrt = null; markiere(''); });
 /* ---------- Bewegliche Teile nach der Regel der 3D-Lage ----------
    Ein Knoten X plus ein leerer Knoten „X_Draussen“. Dessen Lage ist die Mitte von X, wenn es draußen steht; in der Datei steht X
    an seinem Halt. Der Knopf fährt X in 6 s geradlinig hin oder her, draußen ist es ausgeblendet. Extras am Draussen-Knoten
-   (aus Blender): label (Knopftext), verbAus/verbEin, reihenfolge, start = 'draussen'. Räder sind Nachfahren mit „_Rad_“ im Namen. */
+   (aus Blender): label (Knopftext), verbAus/verbEin, reihenfolge, start = 'draussen'. Räder sind Nachfahren mit „_Rad_“ im Namen.
+   geheim = true heißt: nur für die Spielleitung. Der Player zeigt dafür keinen Knopf, das Teil bleibt am Halt. */
 const FZ_MS = 6000;
 let fahrzeuge = [];   // { label, verbAus, verbEin, obj, basis, versatz, raeder, zustand, ziel, t, knopf }
 const _fzAchse = new THREE.Vector3(), _fzQ = new THREE.Quaternion();
@@ -331,6 +332,7 @@ function fahrzeugeLesen() {
     const m = /^(.+)_Draussen$/.exec(n);
     if (!m || !knoten[m[1]]) return;
     const obj = knoten[m[1]], draussen = knoten[n], ex = draussen.userData || {};
+    if (ex.geheim) return;
     const box = new THREE.Box3().setFromObject(obj);
     if (box.isEmpty()) return;
     /* Versatz in Weltkoordinaten, umgerechnet in die Koordinaten des Elternknotens, in denen position gilt */

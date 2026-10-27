@@ -48,7 +48,7 @@ Unterstriche im Namen werden zu Leerzeichen (`Kamera_Lidl_Dach` heißt „Lidl D
 
 **Animationen:** Jede in der GLB eingebaute Animationsspur bekommt einen Knopf zum Abspielen und Stoppen. Sie läuft in Schleife.
 
-Dazu kommen bewegliche Teile ohne Animationsspur: ein Objekt `X` plus ein leeres Objekt `X_Draussen`. Dessen Lage ist die Mitte von `X`, wenn es „draußen“ steht. Ein Klick fährt `X` in 6 Sekunden dorthin und blendet es aus, der nächste Klick holt es zurück. Optionale Custom Properties am `_Draussen`-Objekt: `label` (Knopftext), `verbAus` und `verbEin` (z. B. „hebt ab“ / „senkt sich“), `reihenfolge` (Zahl) und `start` = `draussen` (beim Laden schon draußen).
+Dazu kommen bewegliche Teile ohne Animationsspur: ein Objekt `X` plus ein leeres Objekt `X_Draussen`. Dessen Lage ist die Mitte von `X`, wenn es „draußen“ steht. Ein Klick fährt `X` in 6 Sekunden dorthin und blendet es aus, der nächste Klick holt es zurück. Optionale Custom Properties am `_Draussen`-Objekt: `label` (Knopftext), `verbAus` und `verbEin` (z. B. „hebt ab“ / „senkt sich“), `reihenfolge` (Zahl) und `start` = `draussen` (beim Laden schon draußen). Teile mit `geheim` = `true` sind nur für die Spielleitung: Der Player zeigt für sie keinen Knopf, sie bleiben an ihrem Halt.
 
 **Steuerung:**
 
