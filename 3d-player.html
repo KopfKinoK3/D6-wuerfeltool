@@ -22,6 +22,7 @@
   .knopf { padding: 7px 12px; border: 1px solid var(--knopf-rand); border-radius: 7px; background: var(--panel); color: var(--text);
            font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
   .knopf:hover { background: var(--hover); }
+  .knopf:disabled { cursor: default; }
   .knopf.an:hover, .knopf.haupt:hover { background: #333; }
   .knopf.an { background: var(--akzent); border-color: var(--akzent); color: var(--akzent-text); font-weight: 600; }
   .knopf.haupt { background: var(--akzent); border-color: var(--akzent); color: var(--akzent-text); font-weight: 600; }
@@ -191,7 +192,7 @@ function dateiLaden(file) {
 
 function karteLeeren() {
   if (mixer) { mixer.stopAllAction(); mixer = null; }
-  spuren = [];
+  spuren = []; fahrzeuge = [];
   if (!modell) return;
   scene.remove(modell);
   modell.traverse(k => {
@@ -228,7 +229,7 @@ function karteSetzen(gltf, name) {
   document.getElementById('kartenName').textContent = `${name} · ${gr.x.toFixed(0)}×${gr.z.toFixed(0)} m`;
   document.body.dataset.karte = name;
   gesamtansicht(true);
-  meldung(`Karte geladen · ${stationen.length} Stationen · ${spuren.length} Animationen`);
+  meldung(`Karte geladen · ${stationen.length} Stationen · ${spuren.length + fahrzeuge.length} Animationen`);
 }
 
 /* ---------- Stationen ---------- */
@@ -315,12 +316,93 @@ function gesamtansicht(sofort) {
 /* Jede eigene Eingabe beendet eine laufende Fahrt */
 controls.addEventListener('start', () => { fahrt = null; markiere(''); });
 
-/* ---------- Animationen: je Spur ein Knopf Abspielen/Stopp ---------- */
+/* ---------- Bewegliche Teile nach der Regel der 3D-Lage ----------
+   Ein Knoten X plus ein leerer Knoten „X_Draussen“. Dessen Lage ist die Mitte von X, wenn es draußen steht; in der Datei steht X
+   an seinem Halt. Der Knopf fährt X in 6 s geradlinig hin oder her, draußen ist es ausgeblendet. Extras am Draussen-Knoten
+   (aus Blender): label (Knopftext), verbAus/verbEin, reihenfolge, start = 'draussen'. Räder sind Nachfahren mit „_Rad_“ im Namen. */
+const FZ_MS = 6000;
+let fahrzeuge = [];   // { label, verbAus, verbEin, obj, basis, versatz, raeder, zustand, ziel, t, knopf }
+const _fzAchse = new THREE.Vector3(), _fzQ = new THREE.Quaternion();
+function fahrzeugeLesen() {
+  fahrzeuge = [];
+  const knoten = {};
+  modell.traverse(k => { if (k.name && !(k.name in knoten)) knoten[k.name] = k; });
+  Object.keys(knoten).forEach(n => {
+    const m = /^(.+)_Draussen$/.exec(n);
+    if (!m || !knoten[m[1]]) return;
+    const obj = knoten[m[1]], draussen = knoten[n], ex = draussen.userData || {};
+    const box = new THREE.Box3().setFromObject(obj);
+    if (box.isEmpty()) return;
+    /* Versatz in Weltkoordinaten, umgerechnet in die Koordinaten des Elternknotens, in denen position gilt */
+    const zielWelt = draussen.getWorldPosition(new THREE.Vector3()), mitteWelt = box.getCenter(new THREE.Vector3());
+    const eltern = obj.parent;
+    const versatz = eltern.worldToLocal(zielWelt.clone()).sub(eltern.worldToLocal(mitteWelt.clone()));
+    const raeder = [];
+    obj.traverse(k => {
+      if (!k.isMesh || !/_Rad_/.test(k.name)) return;
+      /* Drehpunkt in die Radmitte, Achse = schmalste Ausdehnung, Radius = halbe größte */
+      k.geometry.computeBoundingBox();
+      const bb = k.geometry.boundingBox, c = bb.getCenter(new THREE.Vector3()), g = bb.getSize(new THREE.Vector3());
+      k.geometry.translate(-c.x, -c.y, -c.z);
+      k.position.add(c.clone().multiply(k.scale).applyQuaternion(k.quaternion));
+      raeder.push({ mesh: k, r: Math.max(g.x, g.y, g.z) / 2 || 0.15, basis: k.quaternion.clone() });
+    });
+    const fz = { label: ex.label || m[1].replace(/^Fahrzeuge_/, '').replace(/_/g, ' ').trim(),
+                 verbAus: ex.verbAus || 'fährt aus', verbEin: ex.verbEin || 'fährt ein', reihenfolge: +ex.reihenfolge || 0,
+                 obj, basis: obj.position.clone(), versatz, raeder,
+                 zustand: ex.start === 'draussen' ? 'draussen' : 'drin', ziel: null, t: 0 };
+    fahrzeugStellen(fz, fz.zustand === 'draussen' ? 1 : 0);
+    fahrzeuge.push(fz);
+  });
+  fahrzeuge.sort((a, b) => a.reihenfolge - b.reihenfolge);
+}
+/* a = 0 am Halt, a = 1 draußen */
+function fahrzeugStellen(fz, a) {
+  fz.obj.position.copy(fz.basis).addScaledVector(fz.versatz, a);
+  fz.obj.visible = a < 1;
+  const s = fz.versatz.length() * a;
+  _fzAchse.set(0, 1, 0).cross(fz.versatz).normalize();
+  if (!isFinite(_fzAchse.x)) return;
+  fz.raeder.forEach(rd => { _fzQ.setFromAxisAngle(_fzAchse, s / rd.r); rd.mesh.quaternion.copy(_fzQ).multiply(rd.basis); });
+}
+function fahrzeugStarten(fz) {
+  if (fz.ziel) return;
+  fz.ziel = fz.zustand === 'draussen' ? 'drin' : 'draussen';
+  fz.t = 0;
+  fahrzeugAnzeigen(fz);
+}
+function fahrzeugeBewegen(dt) {
+  for (const fz of fahrzeuge) {
+    if (!fz.ziel) continue;
+    fz.t = Math.min(1, fz.t + dt / FZ_MS);
+    /* Einfahrt bremst zum Halt hin, Ausfahrt zieht an, wie in der 3D-Lage */
+    fahrzeugStellen(fz, fz.ziel === 'drin' ? Math.pow(1 - fz.t, 3) : Math.pow(fz.t, 3));
+    if (fz.t >= 1) { fz.zustand = fz.ziel; fz.ziel = null; fahrzeugAnzeigen(fz); }
+  }
+}
+function fahrzeugAnzeigen(fz) {
+  const verb = (fz.ziel || (fz.zustand === 'draussen' ? 'drin' : 'draussen')) === 'drin' ? fz.verbEin : fz.verbAus;
+  fz.knopf.innerHTML = `<span></span><span class="taste">${fz.ziel ? '…' : '▶'}</span>`;
+  fz.knopf.firstChild.textContent = `${fz.label} ${verb}`;
+  fz.knopf.disabled = !!fz.ziel;
+  fz.knopf.classList.toggle('an', !!fz.ziel);
+  document.body.dataset.fahrzeuge = fahrzeuge.map(f => `${f.label}:${f.ziel ? 'faehrt' : f.zustand}`).join(',');
+}
+
+/* ---------- Animationen: eingebaute Spuren (je ein Knopf Abspielen/Stopp) und bewegliche Teile ---------- */
 const animEl = document.getElementById('animationen');
 const animHinweis = document.getElementById('animationenHinweis');
 function animationenSetzen(clips) {
   animEl.innerHTML = '';
   spuren = [];
+  fahrzeugeLesen();
+  fahrzeuge.forEach(fz => {
+    fz.knopf = document.createElement('button');
+    fz.knopf.className = 'knopf';
+    fz.knopf.onclick = () => fahrzeugStarten(fz);
+    animEl.appendChild(fz.knopf);
+    fahrzeugAnzeigen(fz);
+  });
   mixer = clips.length ? new THREE.AnimationMixer(modell) : null;
   clips.forEach((clip, i) => {
     const aktion = mixer.clipAction(clip);
@@ -332,7 +414,7 @@ function animationenSetzen(clips) {
     spuren.push(sp);
     spurAnzeigen(sp);
   });
-  animHinweis.textContent = clips.length ? '' : 'Diese Karte hat keine eingebauten Animationen.';
+  animHinweis.textContent = clips.length || fahrzeuge.length ? '' : 'Diese Karte hat keine Animationen und keine beweglichen Teile.';
   document.body.dataset.animationen = clips.length;
 }
 function spurSchalten(sp) {
@@ -418,6 +500,7 @@ const uhr = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = uhr.getDelta() * 1000;
   if (mixer) mixer.update(dt / 1000);
+  fahrzeugeBewegen(dt);
   if (gehalten.size || getippt.size) kameraSteuern(dt);
   if (fahrt) {
     fahrt.t = Math.min(1, fahrt.t + dt / fahrt.dauer);
