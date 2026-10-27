@@ -31,6 +31,42 @@ Ein schlankes, generisches Würfelpool-Tool für W6-basierte Systeme. Poolgröß
 
 Die Standardwerte (Erfolg ab 5, Patzer-Schwelle bei mehr als der Hälfte Einsen) orientieren sich an einer verbreiteten, generischen Würfelpool-Mechanik und sind an kein bestimmtes Regelwerk gebunden. Beide Werte lassen sich frei anpassen.
 
+## 3D-Player für GLB-Karten
+
+`3d-player.html` ist ein eigenständiger Betrachter für 3D-Karten im GLB-Format, gedacht für die Spieler am Tisch. Er hat keine Verbindung zum Würfeltool.
+
+**Start:** `3d-player.html` per Doppelklick im Browser öffnen (Safari ab 16.4, Chrome, Firefox). Dann „Karte laden“ wählen oder eine `.glb`-Datei ins Fenster ziehen. Die Datei wird nur lokal gelesen, nichts wird hochgeladen. Beim ersten Öffnen braucht der Browser Internet, weil three.js in fester Version (0.185.1) von jsDelivr geladen wird.
+
+**Stationen:** Rechts stehen die Blickwinkel aus der Karte. Ein Klick fährt die Kamera in 5 Sekunden weich dorthin. „Gesamtansicht“ zeigt die ganze Karte. Ein Blickwinkel entsteht in Blender aus zwei leeren Objekten:
+
+| Objekt | Bedeutung |
+|---|---|
+| `Kamera_<Name>` | Standort der Kamera |
+| `Kamera_<Name>_Ziel` | Punkt, auf den sie schaut (fehlt er, schaut sie 10 m entlang ihrer −Z-Achse) |
+
+Unterstriche im Namen werden zu Leerzeichen (`Kamera_Lidl_Dach` heißt „Lidl Dach“). Die Reihenfolge folgt der Datei.
+
+**Animationen:** Jede in der GLB eingebaute Animationsspur bekommt einen Knopf zum Abspielen und Stoppen. Sie läuft in Schleife.
+
+**Steuerung:**
+
+| Eingabe | Wirkung |
+|---|---|
+| Maus links ziehen | um das Ziel drehen |
+| Maus rechts ziehen | schieben |
+| Mausrad | zoomen |
+| Pfeiltasten | Kamera über den Boden fahren (halten für längere Fahrt) |
+| `-` / rechte Umschalttaste | Blick nach links / rechts drehen |
+| `1` bis `9`, `0` | Station anfahren, Gesamtansicht |
+
+Auf dem Handy oder Tablet: ein Finger dreht, zwei Finger zoomen und schieben. Bei schmalen Fenstern rutscht die Liste unter das Bild.
+
+**Falls der Doppelklick nicht reicht:** Blockiert ein Browser Skripte aus lokalen Dateien, im Ordner des Repos einen kleinen Server starten und `http://localhost:8000/3d-player.html` öffnen:
+
+```bash
+python3 -m http.server 8000
+```
+
 ## Daten & Datenschutz
 
 Das Tool nutzt ausschließlich den `localStorage` deines Browsers. Es gibt keinen Server, keine Cookies, kein Tracking.

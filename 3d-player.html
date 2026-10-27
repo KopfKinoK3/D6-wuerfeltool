@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D-Player</title>
+<meta name="description" content="Schlanker 3D-Player für GLB-Karten: Blickwinkel aus der Datei anfahren, eingebaute Animationen abspielen. Läuft lokal im Browser, nichts wird hochgeladen.">
+<style>
+  :root {
+    --bg: #181c20; --panel: #20252b; --rand: #323941; --text: #e6e9ec; --leise: #8f99a3;
+    --akzent: #e0a040; --akzent-text: #181c20;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text);
+         display: flex; flex-direction: column; overflow: hidden; }
+
+  header { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--rand); flex-wrap: wrap; }
+  header h1 { font-size: 15px; font-weight: 700; }
+  #kartenName { font-size: 12.5px; color: var(--leise); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .knopf { padding: 7px 12px; border: 1px solid var(--rand); border-radius: 7px; background: var(--panel); color: var(--text);
+           font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
+  .knopf:hover { border-color: var(--leise); }
+  .knopf.an { background: var(--akzent); border-color: var(--akzent); color: var(--akzent-text); font-weight: 600; }
+  .knopf.haupt { background: var(--akzent); border-color: var(--akzent); color: var(--akzent-text); font-weight: 600; }
+
+  main { flex: 1; display: flex; min-height: 0; }
+  #buehne { flex: 1; position: relative; min-width: 0; min-height: 0; outline: none; }
+  #buehne canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  #buehne.ziel::after { content: "Karte hier ablegen"; position: absolute; inset: 12px; border: 2px dashed var(--akzent);
+                        border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px;
+                        background: rgba(24,28,32,.7); pointer-events: none; }
+  #leer { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 12px; text-align: center; padding: 20px; color: var(--leise); font-size: 14px; line-height: 1.5; }
+  #leer strong { color: var(--text); font-size: 16px; }
+  #meldung { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: rgba(32,37,43,.94);
+             border: 1px solid var(--rand); border-radius: 8px; padding: 7px 12px; font-size: 13px; max-width: calc(100% - 24px);
+             opacity: 0; transition: opacity .25s; pointer-events: none; }
+  #meldung.zeigen { opacity: 1; }
+
+  aside { width: 260px; flex-shrink: 0; border-left: 1px solid var(--rand); background: var(--panel); overflow-y: auto; padding: 12px; }
+  aside section + section { margin-top: 18px; }
+  aside h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: var(--leise); font-weight: 700; margin-bottom: 8px; }
+  .liste { display: flex; flex-direction: column; gap: 6px; }
+  .liste .knopf { width: 100%; display: flex; justify-content: space-between; gap: 8px; }
+  .liste .taste { color: var(--leise); font-size: 11.5px; }
+  .liste .knopf.an .taste { color: var(--akzent-text); }
+  .hinweis { font-size: 12px; color: var(--leise); line-height: 1.5; }
+  .tasten { font-size: 12px; color: var(--leise); line-height: 1.7; }
+  kbd { font: inherit; font-size: 11px; border: 1px solid var(--rand); border-radius: 4px; padding: 0 4px; color: var(--text); }
+
+  /* Schmales Fenster: Seitenleiste unter die Bühne */
+  @media (max-width: 720px) {
+    main { flex-direction: column; }
+    aside { width: auto; max-height: 42vh; border-left: none; border-top: 1px solid var(--rand); }
+    .liste { flex-direction: row; flex-wrap: wrap; }
+    .liste .knopf { width: auto; }
+    .liste .taste { display: none; }
+    #tastenHilfe { display: none; }
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <h1>3D-Player</h1>
+  <span id="kartenName">keine Karte geladen</span>
+  <button class="knopf haupt" id="btnLaden">Karte laden</button>
+  <input type="file" id="datei" accept=".glb,model/gltf-binary" hidden>
+</header>
+<main>
+  <div id="buehne" tabindex="0">
+    <div id="leer">
+      <strong>GLB-Karte hierher ziehen oder „Karte laden“ wählen</strong>
+      <span>Die Datei bleibt auf deinem Gerät, nichts wird hochgeladen.</span>
+    </div>
+    <div id="meldung"></div>
+  </div>
+  <aside>
+    <section>
+      <h2>Stationen</h2>
+      <div class="liste" id="stationen"></div>
+      <p class="hinweis" id="stationenHinweis"></p>
+    </section>
+    <section>
+      <h2>Animationen</h2>
+      <div class="liste" id="animationen"></div>
+      <p class="hinweis" id="animationenHinweis">Noch keine Karte geladen.</p>
+    </section>
+    <section id="tastenHilfe">
+      <h2>Steuerung</h2>
+      <p class="tasten">
+        Maus links: drehen<br>
+        Maus rechts: schieben<br>
+        Rad: zoomen<br>
+        <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> über den Boden fahren<br>
+        <kbd>-</kbd> nach links drehen, rechtes <kbd>⇧</kbd> nach rechts<br>
+        <kbd>1</kbd> bis <kbd>9</kbd> Station, <kbd>0</kbd> Gesamtansicht
+      </p>
+    </section>
+  </aside>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+/* Eigenständiger Player: keine Verbindung zu anderen Seiten, kein localStorage. Kartenvertrag wie in der 3D-Lage:
+   ein leerer Knoten „Kamera_<Name>“ ist die Lage der Kamera, „Kamera_<Name>_Ziel“ der Punkt, auf den sie schaut.
+   Ohne Ziel schaut sie 10 m entlang ihrer eigenen −z-Achse. Unterstriche im Namen werden Leerzeichen. */
+
+/* ---------- Grundgerüst ---------- */
+const buehne = document.getElementById('buehne');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+buehne.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x181c20);
+const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 2000);
+camera.position.set(60, 48, 60);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.minDistance = 0.5;
+controls.maxDistance = 400;
+controls.maxPolarAngle = Math.PI * 0.495;
+
+scene.add(new THREE.HemisphereLight(0xdfe8f2, 0x30363c, 2.4));
+const sonne = new THREE.DirectionalLight(0xfff2e0, 1.5);
+sonne.position.set(40, 80, 30);
+scene.add(sonne);
+
+const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/libs/draco/gltf/');
+const loader = new GLTFLoader().setDRACOLoader(draco).setMeshoptDecoder(MeshoptDecoder);
+
+let modell = null;
+let box = new THREE.Box3(new THREE.Vector3(-30, 0, -20), new THREE.Vector3(30, 10, 20));
+let stationen = [];     // { name, pos: Vector3, ziel: Vector3 }
+let mixer = null;
+let spuren = [];        // { clip, aktion, knopf }
+
+const meldungEl = document.getElementById('meldung');
+let meldungTimer = 0;
+function meldung(text) {
+  meldungEl.textContent = text;
+  meldungEl.classList.add('zeigen');
+  clearTimeout(meldungTimer);
+  meldungTimer = setTimeout(() => meldungEl.classList.remove('zeigen'), 3500);
+}
+
+/* ---------- Laden: FileReader + parse, nicht loader.load(url), damit es auch über file:// geht ---------- */
+const datei = document.getElementById('datei');
+document.getElementById('btnLaden').onclick = () => datei.click();
+datei.onchange = () => { if (datei.files[0]) dateiLaden(datei.files[0]); datei.value = ''; };
+['dragenter', 'dragover'].forEach(ev => document.body.addEventListener(ev, e => { e.preventDefault(); buehne.classList.add('ziel'); }));
+document.body.addEventListener('dragleave', e => { if (!e.relatedTarget) buehne.classList.remove('ziel'); });
+document.body.addEventListener('drop', e => {
+  e.preventDefault(); buehne.classList.remove('ziel');
+  const f = e.dataTransfer.files[0]; if (f) dateiLaden(f);
+});
+
+function dateiLaden(file) {
+  if (!/\.glb$/i.test(file.name)) { meldung('Bitte eine .glb-Datei wählen'); return; }
+  meldung(`Lade ${file.name} …`);
+  const fr = new FileReader();
+  fr.onerror = () => meldung('Die Datei ließ sich nicht lesen');
+  fr.onload = () => {
+    try {
+      loader.parse(fr.result, '', gltf => {
+        try { karteSetzen(gltf, file.name.replace(/\.glb$/i, '')); }
+        catch (e) { console.error(e); meldung('Die Karte ließ sich nicht anzeigen'); }
+      }, e => { console.error(e); meldung('Die Karte ließ sich nicht lesen'); });
+    } catch (e) { console.error(e); meldung('Die Karte ließ sich nicht lesen'); }
+  };
+  fr.readAsArrayBuffer(file);
+}
+
+function karteLeeren() {
+  if (mixer) { mixer.stopAllAction(); mixer = null; }
+  spuren = [];
+  if (!modell) return;
+  scene.remove(modell);
+  modell.traverse(k => {
+    if (k.geometry) k.geometry.dispose();
+    if (k.material) [].concat(k.material).forEach(m => {
+      Object.values(m).forEach(v => { if (v && v.isTexture) v.dispose(); });
+      m.dispose();
+    });
+  });
+  modell = null;
+}
+
+function karteSetzen(gltf, name) {
+  const neu = gltf.scene;
+  const b = new THREE.Box3().setFromObject(neu);
+  if (b.isEmpty()) throw new Error('leeres Modell');
+  karteLeeren();
+  /* Doppelseitig wie in der 3D-Lage, damit offene Wände von innen nicht verschwinden */
+  neu.traverse(k => { if (k.material) [].concat(k.material).forEach(m => { m.side = THREE.DoubleSide; }); });
+  modell = neu;
+  box = b;
+  scene.add(modell);
+  modell.updateMatrixWorld(true);
+
+  const gr = box.getSize(new THREE.Vector3()), gross = Math.max(gr.x, gr.y, gr.z);
+  controls.maxDistance = gross * 3;
+  camera.near = Math.max(0.05, gross / 5000);
+  camera.far = gross * 20;
+  camera.updateProjectionMatrix();
+
+  stationenLesen();
+  animationenSetzen(gltf.animations || []);
+  document.getElementById('leer').style.display = 'none';
+  document.getElementById('kartenName').textContent = `${name} · ${gr.x.toFixed(0)}×${gr.z.toFixed(0)} m`;
+  document.body.dataset.karte = name;
+  gesamtansicht(true);
+  meldung(`Karte geladen · ${stationen.length} Stationen · ${spuren.length} Animationen`);
+}
+
+/* ---------- Stationen ---------- */
+const stationenEl = document.getElementById('stationen');
+const stationenHinweis = document.getElementById('stationenHinweis');
+const knotenText = n => n.replace(/^Kamera_/, '').replace(/_/g, ' ').trim();
+
+function stationenLesen() {
+  stationen = [];
+  const knoten = {};
+  modell.traverse(k => { if (k.name && !(k.name in knoten)) knoten[k.name] = k; });
+  const welt = o => o.getWorldPosition(new THREE.Vector3());
+  modell.traverse(k => {   /* in Dateireihenfolge */
+    const n = k.name || '';
+    if (!/^Kamera_./.test(n) || /_Ziel$/.test(n) || k.isMesh) return;
+    const pos = welt(k), zk = knoten[n + '_Ziel'];
+    const ziel = zk ? welt(zk) : pos.clone().add(new THREE.Vector3(0, 0, -10).applyQuaternion(k.getWorldQuaternion(new THREE.Quaternion())));
+    stationen.push({ name: knotenText(n), pos, ziel });
+  });
+  stationenBauen();
+}
+
+function stationenBauen() {
+  stationenEl.innerHTML = '';
+  const knopf = (text, taste, id, klick) => {
+    const b = document.createElement('button');
+    b.className = 'knopf';
+    b.dataset.id = id;
+    b.innerHTML = `<span></span><span class="taste">${taste}</span>`;
+    b.firstChild.textContent = text;
+    b.onclick = klick;
+    stationenEl.appendChild(b);
+  };
+  knopf('Gesamtansicht', '0', 'ganz', () => gesamtansicht());
+  stationen.forEach((s, i) => knopf(s.name, i < 9 ? String(i + 1) : '', 'st' + i, () => stationAnfahren(i)));
+  stationenHinweis.textContent = !modell ? 'Noch keine Karte geladen.' : stationen.length ? '' :
+    'Diese Karte hat keine Blickwinkel. Sie entstehen aus leeren Objekten „Kamera_<Name>“ mit einem zweiten Objekt „Kamera_<Name>_Ziel“.';
+  document.body.dataset.stationen = stationen.length;
+}
+
+function markiere(id) {
+  stationenEl.querySelectorAll('.knopf').forEach(b => b.classList.toggle('an', b.dataset.id === id));
+  document.body.dataset.station = id || '';
+}
+
+/* ---------- Kamerafahrt: 5 s mit weichem Anfahren und Bremsen wie in der 3D-Lage ---------- */
+const FAHRT_MS = 5000;
+const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+let fahrt = null;
+function fahre(pos, ziel, dauer = FAHRT_MS) {
+  fahrt = { vonPos: camera.position.clone(), vonZiel: controls.target.clone(), zielPos: pos.clone(), zielZiel: ziel.clone(), t: 0, dauer };
+}
+function stationAnfahren(i) {
+  const s = stationen[i];
+  if (!s) return;
+  fahre(s.pos, s.ziel);
+  markiere('st' + i);
+}
+/* Schräg von oben wie in der 3D-Lage. Der Abstand wird gesucht, nicht geraten: binäre Suche, bis alle acht Ecken
+   der Karte im Bild liegen. */
+function einpassen(mitte, dir) {
+  const ecken = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) ecken.push(new THREE.Vector3(x, y, z));
+  const probe = camera.clone();
+  const passt = d => {
+    probe.position.copy(mitte).addScaledVector(dir, d);
+    probe.lookAt(mitte);
+    probe.updateMatrixWorld(true);
+    return ecken.every(e => { const v = e.clone().project(probe); return Math.abs(v.x) <= 0.98 && Math.abs(v.y) <= 0.98 && v.z < 1; });
+  };
+  let lo = 0.5, hi = box.getSize(new THREE.Vector3()).length() * 6;
+  if (!passt(hi)) return hi;
+  for (let i = 0; i < 26; i++) { const m = (lo + hi) / 2; if (passt(m)) hi = m; else lo = m; }
+  return hi;
+}
+function gesamtansicht(sofort) {
+  const mitte = box.getCenter(new THREE.Vector3());
+  const dir = new THREE.Vector3(0.20, 0.84, 0.50).normalize();
+  const pos = mitte.clone().addScaledVector(dir, einpassen(mitte, dir));
+  if (sofort) { camera.position.copy(pos); controls.target.copy(mitte); fahrt = null; camera.lookAt(mitte); }
+  else fahre(pos, mitte);
+  markiere('ganz');
+}
+/* Jede eigene Eingabe beendet eine laufende Fahrt */
+controls.addEventListener('start', () => { fahrt = null; markiere(''); });
+
+/* ---------- Animationen: je Spur ein Knopf Abspielen/Stopp ---------- */
+const animEl = document.getElementById('animationen');
+const animHinweis = document.getElementById('animationenHinweis');
+function animationenSetzen(clips) {
+  animEl.innerHTML = '';
+  spuren = [];
+  mixer = clips.length ? new THREE.AnimationMixer(modell) : null;
+  clips.forEach((clip, i) => {
+    const aktion = mixer.clipAction(clip);
+    const b = document.createElement('button');
+    b.className = 'knopf';
+    const sp = { clip, aktion, knopf: b, laeuft: false };
+    b.onclick = () => spurSchalten(sp);
+    animEl.appendChild(b);
+    spuren.push(sp);
+    spurAnzeigen(sp);
+  });
+  animHinweis.textContent = clips.length ? '' : 'Diese Karte hat keine eingebauten Animationen.';
+  document.body.dataset.animationen = clips.length;
+}
+function spurSchalten(sp) {
+  sp.laeuft = !sp.laeuft;
+  if (sp.laeuft) sp.aktion.reset().play(); else sp.aktion.stop();
+  spurAnzeigen(sp);
+}
+function spurAnzeigen(sp) {
+  const name = (sp.clip.name || 'Animation').replace(/_/g, ' ');
+  sp.knopf.innerHTML = `<span></span><span class="taste">${sp.laeuft ? '■ Stopp' : '▶ Abspielen'}</span>`;
+  sp.knopf.firstChild.textContent = name;
+  sp.knopf.classList.toggle('an', sp.laeuft);
+  document.body.dataset.laeuft = spuren.filter(s => s.laeuft).map(s => s.clip.name).join(',');
+}
+
+/* ---------- Tastatur (Vorbild: kameraSteuern in der 3D-Lage) ----------
+   Pfeile fahren die Kamera über den Boden in Bildschirmrichtung, solange sie gehalten werden. „-“ dreht den Blick
+   nach links um das Ziel, das rechte ⇧ nach rechts, 60° je Sekunde. */
+const PFEILE = { ArrowUp: [0, 1], ArrowDown: [0, -1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+const gehalten = new Set();
+/* Ein kurzer Tipp kann zwischen zwei Bildern schon wieder losgelassen sein. Er zählt trotzdem, als Schritt von 0,12 s. */
+const getippt = new Set();
+const TIPP_S = 0.12;
+function bodenAchsen() {
+  const rechts = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion); rechts.y = 0;
+  if (rechts.lengthSq() < 1e-6) rechts.set(1, 0, 0);
+  rechts.normalize();
+  return { rechts, vor: new THREE.Vector3(0, 1, 0).cross(rechts) };
+}
+function kameraSteuern(dt) {
+  const tasten = new Set([...gehalten, ...getippt]);
+  const nurTipp = [...getippt].some(k => !gehalten.has(k));
+  getippt.clear();
+  const s = nurTipp ? Math.max(TIPP_S, Math.min(dt, 100) / 1000) : Math.min(dt, 100) / 1000;
+  const { vor, rechts } = bodenAchsen(), weg = new THREE.Vector3();
+  for (const k of tasten) { const p = PFEILE[k]; if (p) weg.addScaledVector(rechts, p[0]).addScaledVector(vor, p[1]); }
+  const dreh = (tasten.has('links') ? 1 : 0) - (tasten.has('rechts') ? 1 : 0);
+  if (!weg.lengthSq() && !dreh) return;
+  fahrt = null;
+  if (document.body.dataset.station) markiere('');
+  if (weg.lengthSq()) {
+    /* Tempo mit dem Abstand: nah fein, weit schnell, mindestens 4 m/s. Das Ziel bleibt über der Karte. */
+    weg.normalize().multiplyScalar(Math.max(4, camera.position.distanceTo(controls.target) * 0.5) * s);
+    weg.x = THREE.MathUtils.clamp(controls.target.x + weg.x, box.min.x, box.max.x) - controls.target.x;
+    weg.z = THREE.MathUtils.clamp(controls.target.z + weg.z, box.min.z, box.max.z) - controls.target.z;
+    camera.position.add(weg); controls.target.add(weg);
+  }
+  if (dreh) {
+    const o = camera.position.clone().sub(controls.target).applyAxisAngle(new THREE.Vector3(0, 1, 0), dreh * s * Math.PI / 3);
+    camera.position.copy(controls.target).add(o);
+  }
+  camera.lookAt(controls.target);
+}
+window.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const halten = k => { if (!gehalten.has(k)) getippt.add(k); gehalten.add(k); };
+  if (PFEILE[e.key]) { halten(e.key); e.preventDefault(); return; }
+  if (e.key === '-') { halten('links'); e.preventDefault(); return; }
+  if (e.code === 'ShiftRight') { halten('rechts'); return; }
+  if (e.key === '0') { gesamtansicht(); return; }
+  const n = parseInt(e.key, 10);
+  if (n >= 1 && n <= 9) stationAnfahren(n - 1);
+});
+window.addEventListener('keyup', e => {
+  gehalten.delete(e.key);
+  if (e.key === '-') gehalten.delete('links');
+  if (e.code === 'ShiftRight' || e.key === 'Shift') gehalten.delete('rechts');
+});
+window.addEventListener('blur', () => gehalten.clear());
+
+/* ---------- Größe und Schleife ---------- */
+function passen() {
+  const b = buehne.clientWidth, h = buehne.clientHeight;
+  if (!b || !h) return;
+  renderer.setSize(b, h, false);
+  camera.aspect = b / h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(passen).observe(buehne);
+passen();
+
+const uhr = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = uhr.getDelta() * 1000;
+  if (mixer) mixer.update(dt / 1000);
+  if (gehalten.size || getippt.size) kameraSteuern(dt);
+  if (fahrt) {
+    fahrt.t = Math.min(1, fahrt.t + dt / fahrt.dauer);
+    const e = ease(fahrt.t);
+    camera.position.lerpVectors(fahrt.vonPos, fahrt.zielPos, e);
+    controls.target.lerpVectors(fahrt.vonZiel, fahrt.zielZiel, e);
+    camera.lookAt(controls.target);
+    if (fahrt.t >= 1) fahrt = null;
+  }
+  if (!fahrt) controls.update();
+  renderer.render(scene, camera);
+  document.body.dataset.kamera = camera.position.toArray().map(v => v.toFixed(1)).join(',');
+});
+
+stationenBauen();
+window.player = { stationen: () => stationen, spuren: () => spuren, dateiLaden };   /* für eigene Tests in der Konsole */
+</script>
+</body>
+</html>
