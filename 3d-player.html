@@ -22,7 +22,7 @@
   .kopfLinks { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
   header h1 { font-size: 15px; font-weight: 700; white-space: nowrap; }
   #kartenName { font-size: 12.5px; color: var(--leise); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  #btnLaden { justify-self: end; }
+  #btnLaden { justify-self: end; grid-column: 3; }
   .knopf { padding: 7px 12px; border: 1px solid var(--knopf-rand); border-radius: 7px; background: var(--panel); color: var(--text);
            font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
   .knopf:hover { background: var(--hover); }
@@ -63,8 +63,9 @@
     .liste { flex-direction: row; flex-wrap: wrap; }
     .liste .knopf { width: auto; }
     .liste .taste { display: none; }
-    .tasten { display: none; }
   }
+  /* Schmaler als 900 px: die Steuerung wandert unter die Animationen (Skript unten) */
+  aside .tasten { text-align: left; }
 </style>
 <script type="importmap">
 {
@@ -106,6 +107,9 @@
       <h2>Animationen</h2>
       <div class="liste" id="animationen"></div>
       <p class="hinweis" id="animationenHinweis">Noch keine Karte geladen.</p>
+    </section>
+    <section id="steuerungUnten" hidden>
+      <h2>Steuerung</h2>
     </section>
   </aside>
 </main>
@@ -515,6 +519,17 @@ renderer.setAnimationLoop(() => {
   renderer.render(scene, camera);
   document.body.dataset.kamera = camera.position.toArray().map(v => v.toFixed(1)).join(',');
 });
+
+/* Steuerung oben in der Mitte, bei schmalem Fenster unter den Animationen */
+const tastenEl = document.querySelector('.tasten'), steuerungUnten = document.getElementById('steuerungUnten');
+const schmal = window.matchMedia('(max-width: 900px)');
+function tastenStellen() {
+  if (schmal.matches) steuerungUnten.appendChild(tastenEl);
+  else document.querySelector('header').insertBefore(tastenEl, document.getElementById('btnLaden'));
+  steuerungUnten.hidden = !schmal.matches;
+}
+schmal.addEventListener('change', tastenStellen);
+tastenStellen();
 
 stationenBauen();
 window.player = { stationen: () => stationen, spuren: () => spuren, dateiLaden };   /* für eigene Tests in der Konsole */
