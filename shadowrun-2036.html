@@ -39,6 +39,17 @@
   .channel-cta { margin: 30px 0; padding: 14px 16px; border: 1px solid #e2e2e2; border-radius: 10px; background: #fafafa; font-size: 13px; }
   .channel-cta a { color: #111; font-weight: 600; }
 
+  .karten { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 14px; }
+  .karte { border: 1px solid #e2e2e2; border-radius: 10px; padding: 10px; background: #fff; }
+  .karte h3 { font-size: 15px; font-weight: 700; margin: 10px 0 2px; }
+  .karte .ort { font-size: 11.5px; color: #999; margin-bottom: 8px; }
+  .karte p { font-size: 13px; line-height: 1.6; color: #333; margin-bottom: 8px; }
+  .karte .quelle { font-size: 11px; color: #999; }
+  .karte-haupt, .karte-vorschau img { display: block; width: 100%; height: auto; border-radius: 6px; background: #eee; }
+  .karte-vorschau { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .karte-link { display: inline-block; font-size: 12.5px; font-weight: 600; color: #111; border: 1px solid #ccc; border-radius: 7px; padding: 6px 11px; text-decoration: none; margin: 2px 6px 4px 0; }
+  .karte-link:hover { background: #f0f0f0; }
+
   footer.legal { margin-top: 40px; padding-top: 14px; border-top: 1px solid #eee; font-size: 9.5px; line-height: 1.6; color: #b0b0b0; }
   footer.legal b { font-weight: 600; color: #909090; }
 </style>
@@ -53,6 +64,34 @@
 
 <div class="player-box">
   <b>3D-Karte zum Ausprobieren:</b> Für den <a href="3d-player.html">SR-3D-Player</a> gibt es eine Beispielkarte, die Burg Altendorf in Essen-Burgaltendorf. Du kannst sie hier herunterladen (<a href="karten/Burgaltendorf.glb" download>Burgaltendorf.glb</a>, 6 MB), im Player über "Karte laden" öffnen und die Blickwinkel und Knöpfe testen. Die Datei bleibt auf Deinem Gerät, nichts wird hochgeladen. Mehr dazu in der <a href="https://github.com/KopfKinoK3/D6-wuerfeltool#beispielkarte-burg-altendorf" target="_blank" rel="noopener">Beschreibung auf GitHub</a>.
+</div>
+
+<h2>Kartenübersicht</h2>
+<div class="section-note">3D-Karten für den SR-3D-Player. Der Player lädt Karten nur aus einer Datei auf Deinem Gerät: Datei herunterladen, dann im <a href="3d-player.html" style="color:#666">SR-3D-Player</a> über "Karte laden" öffnen oder ins Fenster ziehen.</div>
+<div class="karten">
+  <div class="karte">
+    <img class="karte-haupt" src="karten/bilder/Burgaltendorf_uebersicht.jpg" alt="Burg Altendorf, Übersicht der 3D-Karte" width="1280" height="800" loading="lazy">
+    <div class="karte-vorschau">
+      <img src="karten/bilder/Burgaltendorf_schraeg.jpg" alt="Burg Altendorf, schräge Ansicht" width="1280" height="800" loading="lazy">
+      <img src="karten/bilder/Burgaltendorf_oben.jpg" alt="Burg Altendorf, Ansicht von oben" width="1280" height="800" loading="lazy">
+    </div>
+    <h3>Burg Altendorf</h3>
+    <div class="ort">Essen-Altendorf</div>
+    <p>Burg Altendorf mit Café und Busbahnhof, Spielort in Shadowrun 2036: Blackrock. Entwurf, 3D-Karte für den SR-3D-Player.</p>
+    <a class="karte-link" href="karten/Burgaltendorf.glb" download>Burgaltendorf.glb laden (6 MB)</a><a class="karte-link" href="3d-player.html">SR-3D-Player öffnen</a>
+  </div>
+  <div class="karte">
+    <img class="karte-haupt" src="karten/bilder/Dwasieden_uebersicht.jpg" alt="Großdolmen von Dwasieden, Übersicht der 3D-Karte" width="1280" height="800" loading="lazy">
+    <div class="karte-vorschau">
+      <img src="karten/bilder/Dwasieden_kammer.jpg" alt="Großdolmen von Dwasieden, Blick in die Kammer" width="1280" height="800" loading="lazy">
+      <img src="karten/bilder/Dwasieden_oben.jpg" alt="Großdolmen von Dwasieden, Ansicht von oben" width="1280" height="800" loading="lazy">
+    </div>
+    <h3>Dwasieden</h3>
+    <div class="ort">Sassnitz, Insel Rügen</div>
+    <p>Großdolmen von Dwasieden, nachgebaut nach den Maßen der Wikipedia (Hünenbett 35 m, Kammer 4,0 x 1,7 m). Gelände, Bäume und die Lage einzelner Steine sind geschätzt. Entwurf für den SR-3D-Player.</p>
+    <p class="quelle">Maßangaben: Wikipedia, Großdolmen von Dwasieden (Sprockhoff 472).</p>
+    <a class="karte-link" href="karten/Dwasieden.glb" download>Dwasieden.glb laden (6 MB)</a><a class="karte-link" href="3d-player.html">SR-3D-Player öffnen</a>
+  </div>
 </div>
 
 <h2>Folgen</h2>
@@ -75,6 +114,7 @@
   Diese Seite ist ein reines Fan-Projekt zur Sammlung eigener Actual-Play-Videos und dient keinen kommerziellen Zwecken.<br><br>
   <b>Marken &amp; Urheberrechte:</b> <i>Shadowrun</i> ist eine eingetragene Handelsmarke (Warenzeichen) der Topps Company, Inc.<br>
   <b>Lizenznehmer:</b> Die Spielinhalte, Regeln und Begriffe basieren auf der deutschen Ausgabe von <a href="https://pegasus.de/" target="_blank" rel="noopener" style="color:#b0b0b0">Pegasus Spiele</a> unter Lizenz von Catalyst Game Labs und der Topps Company, Inc.<br>
+  <a href="impressum.html" style="color:#909090;font-weight:600">Impressum</a><br>
   <b>Ausschluss:</b> Diese Seite steht in keiner offiziellen Verbindung zu Pegasus Spiele, Catalyst Game Labs oder der Topps Company, Inc. Der Betreiber erhebt keinerlei Anspruch auf die verwendeten spielspezifischen Begriffe oder das Regelsystem.
 </footer>
 
@@ -139,7 +179,8 @@
     { id: '-pSmpr-VWKo', title: '(B) Gast-Vorstellung Petra, Shadowrun 2036: Blackrock, Deutschland in den Schatten', dur: '14:23' },
     { id: 'u8huKTebBb8', title: '(C) Gast-Vorstellung Manuel, Shadowrun 2036: Blackrock, Deutschland in den Schatten', dur: '17:14' },
     { id: 'YX2XyPOPKLU', title: '(D) Gast-Vorstellung Christian "Big C" van Straaten aka Christian Paschke, Shadowrun 2036: Blackrock, Deutschland in den Schatten', dur: '20:34' },
-    { id: 'X4U1t7tC4is', title: '(E) KI-Unterstütztes Rollenspiel #Shadowrun 2036', dur: '1:29:08' }
+    { id: 'X4U1t7tC4is', title: '(E) KI-Unterstütztes Rollenspiel #Shadowrun 2036', dur: '1:29:08' },
+    { id: 'g_cIFTWRs1M', title: '(F) Gast-Vorstellung Nils "Atlayan" Usul, Shadowrun 2036: Blackrock, Deutschland in den Schatten', dur: '14:26' }
   ];
 
   // Fantasy-Vorgeschichte der Kampagne (vor Shadowrun 2036), Playlist-Reihenfolge

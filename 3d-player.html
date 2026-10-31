@@ -58,6 +58,10 @@
   .tasten { font-size: 12px; color: var(--leise); line-height: 1.6; text-align: center; align-self: start; }
   kbd { font: inherit; font-size: 11px; border: 1px solid var(--rand); border-radius: 4px; padding: 0 4px; color: var(--text); background: #f7f7f7; }
 
+  .fuss { flex-shrink: 0; padding: 4px 12px; border-top: 1px solid var(--rand); font-size: 11px; text-align: right; }
+  .fuss a { color: #999; text-decoration: none; }
+  .fuss a:hover { text-decoration: underline; }
+
   /* Schmales Fenster: Seitenleiste unter die Bühne */
   @media (max-width: 720px) {
     main { flex-direction: column; }
@@ -116,6 +120,7 @@
     </section>
   </aside>
 </main>
+<footer class="fuss"><a href="impressum.html">Impressum</a></footer>
 
 <script type="module">
 import * as THREE from 'three';

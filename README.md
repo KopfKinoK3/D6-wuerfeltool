@@ -85,6 +85,12 @@ Im Ordner [`karten/`](karten/) liegt `Burgaltendorf.glb`, eine Beispielkarte zum
 
 **Hinweis:** Das Modell ist ein Spielhilfsmittel und kein Plan für echte Gebäude.
 
+## Karten: Burg Altendorf und Dwasieden
+
+Im Ordner [`karten/`](karten/) liegen zwei 3D-Karten für den SR-3D-Player: `Burgaltendorf.glb` (Burg Altendorf mit Café und Busbahnhof, Essen-Altendorf) und `Dwasieden.glb` (Großdolmen von Dwasieden bei Sassnitz auf Rügen, nach den Maßen der Wikipedia nachgebaut, Gelände, Bäume und einzelne Steine geschätzt). Beide sind Entwürfe. Screenshots der Modelle liegen in `karten/bilder/` und sind auf der Seite [Shadowrun 2036](https://kopfkinok3.github.io/D6-wuerfeltool/shadowrun-2036.html) in der Kartenübersicht zu sehen.
+
+Impressum: [impressum.html](impressum.html)
+
 ## Daten & Datenschutz
 
 Das Tool nutzt ausschließlich den `localStorage` deines Browsers. Es gibt keinen Server, keine Cookies, kein Tracking.
