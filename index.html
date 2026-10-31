@@ -8,9 +8,13 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #fff; color: #111; max-width: 640px; margin: 34px auto; padding: 0 20px 60px; }
-  .nav { font-size: 12px; margin-bottom: 18px; }
-  .nav a { color: #666; text-decoration: none; }
-  .nav a:hover { color: #111; text-decoration: underline; }
+  .navreihe { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .navbtn { font-size: 12.5px; font-weight: 600; color: #111; border: 1px solid #ccc; border-radius: 7px; padding: 6px 11px; text-decoration: none; background: #fff; white-space: nowrap; }
+  .navbtn:hover { background: #f0f0f0; }
+  .navbtn[aria-current="page"] { border-color: #111; border-width: 2px; padding: 5px 10px; }
+  @media (max-width: 480px) { .navreihe { gap: 5px; } .navbtn { font-size: 11.5px; padding: 5px 7px; } .navbtn[aria-current="page"] { padding: 4px 6px; } }
+  html { scroll-behavior: smooth; }
+  [id="kampagne"], [id="battle-maps"], [id="videos"] { scroll-margin-top: 14px; }
   h1 { font-size: 19px; font-weight: 700; margin-bottom: 4px; }
   .subtitle { font-size: 12.5px; color: #666; margin-bottom: 22px; line-height: 1.55; }
 
@@ -78,7 +82,7 @@
 </head>
 <body>
 
-<div class="nav"><a href="index.html">🎲 D6-Würfeltool</a> · <a href="shadowrun-2036.html">Shadowrun 2036 (Videos)</a> · <a href="3d-player.html">🧭 SR-3D-Player</a> · <a href="https://github.com/KopfKinoK3">GitHub</a></div>
+<nav class="navreihe" aria-label="Hauptnavigation"><a class="navbtn" href="index.html" aria-current="page">🎲 Würfeltool</a><a class="navbtn" href="shadowrun-2036.html#kampagne">Shadowrun 2036</a><a class="navbtn" href="shadowrun-2036.html#battle-maps">Battle-Maps</a><a class="navbtn" href="shadowrun-2036.html#videos">Videos</a><a class="navbtn" href="3d-player.html">3D-Player</a><a class="navbtn" href="https://www.youtube.com/@TinyTacticTales" target="_blank" rel="noopener">YouTube</a><a class="navbtn" href="https://github.com/KopfKinoK3/D6-wuerfeltool" target="_blank" rel="noopener">GitHub</a></nav>
 
 <h1>🎲 D6-Würfeltool</h1>
 <div class="subtitle">Allzweck-Würfelpool: bis zu 20 × W6 würfeln, Erfolgsschwelle frei einstellen, Patzer optional erkennen. Läuft komplett lokal im Browser — keine Installation, kein Server, keine Datenübertragung.</div>

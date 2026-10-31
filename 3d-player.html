@@ -16,6 +16,12 @@
   body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text);
          display: flex; flex-direction: column; overflow: hidden; }
 
+  .navreihe { flex-shrink: 0; display: flex; gap: 6px; padding: 5px 12px; border-bottom: 1px solid var(--rand); overflow-x: auto; scrollbar-width: none; }
+  .navreihe::-webkit-scrollbar { display: none; }
+  .navbtn { font-size: 12px; font-weight: 600; color: var(--text); border: 1px solid var(--knopf-rand); border-radius: 7px; padding: 3px 9px; text-decoration: none; background: var(--panel); white-space: nowrap; }
+  .navbtn:hover { background: var(--hover); }
+  .navbtn[aria-current="page"] { border-color: var(--akzent); border-width: 2px; padding: 2px 8px; }
+
   /* Kopf in drei Spalten: Name links, Steuerung mittig, Laden rechts */
   /* Seiten gleich breit, damit die Mitte wirklich mittig steht; wird es eng, bricht die Steuerung um */
   header { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(0, auto) minmax(140px, 1fr); align-items: center; gap: 6px 16px; padding: 8px 12px; border-bottom: 1px solid var(--rand); }
@@ -83,10 +89,10 @@
 </script>
 </head>
 <body>
+<nav class="navreihe" aria-label="Hauptnavigation"><a class="navbtn" href="index.html">🎲 Würfeltool</a><a class="navbtn" href="shadowrun-2036.html#kampagne">Shadowrun 2036</a><a class="navbtn" href="shadowrun-2036.html#battle-maps">Battle-Maps</a><a class="navbtn" href="shadowrun-2036.html#videos">Videos</a><a class="navbtn" href="3d-player.html" aria-current="page">3D-Player</a><a class="navbtn" href="https://www.youtube.com/@TinyTacticTales" target="_blank" rel="noopener">YouTube</a><a class="navbtn" href="https://github.com/KopfKinoK3/D6-wuerfeltool" target="_blank" rel="noopener">GitHub</a></nav>
 <header>
   <div class="kopfLinks">
     <h1>SR-3D-Player</h1>
-    <a href="shadowrun-2036.html" class="zurueck">← Shadowrun 2036</a>
     <span id="kartenName">keine Karte geladen</span>
   </div>
   <p class="tasten">

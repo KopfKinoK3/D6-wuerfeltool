@@ -8,9 +8,13 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #fff; color: #111; max-width: 720px; margin: 34px auto; padding: 0 20px 60px; }
-  .nav { font-size: 12px; margin-bottom: 18px; }
-  .nav a { color: #666; text-decoration: none; }
-  .nav a:hover { color: #111; text-decoration: underline; }
+  .navreihe { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .navbtn { font-size: 12.5px; font-weight: 600; color: #111; border: 1px solid #ccc; border-radius: 7px; padding: 6px 11px; text-decoration: none; background: #fff; white-space: nowrap; }
+  .navbtn:hover { background: #f0f0f0; }
+  .navbtn[aria-current="page"] { border-color: #111; border-width: 2px; padding: 5px 10px; }
+  @media (max-width: 480px) { .navreihe { gap: 5px; } .navbtn { font-size: 11.5px; padding: 5px 7px; } .navbtn[aria-current="page"] { padding: 4px 6px; } }
+  html { scroll-behavior: smooth; }
+  [id="kampagne"], [id="battle-maps"], [id="videos"] { scroll-margin-top: 14px; }
   h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   .subtitle { font-size: 12.5px; color: #666; margin-bottom: 16px; line-height: 1.55; }
   .intro-text { font-size: 13.5px; color: #333; line-height: 1.65; margin-bottom: 24px; }
@@ -49,6 +53,10 @@
   .karte-vorschau { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
   .karte-link { display: inline-block; font-size: 12.5px; font-weight: 600; color: #111; border: 1px solid #ccc; border-radius: 7px; padding: 6px 11px; text-decoration: none; margin: 2px 6px 4px 0; }
   .karte-link:hover { background: #f0f0f0; }
+  .karte-video-label { font-size: 11.5px; font-weight: 600; color: #666; margin: 10px 0 5px; }
+  .karte-short { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; max-width: 100%; }
+  .karte-short .short-thumb { width: 72px; flex-shrink: 0; }
+  .karte-short .short-title { padding: 8px 8px 8px 0; min-width: 0; overflow-wrap: anywhere; }
 
   footer.legal { margin-top: 40px; padding-top: 14px; border-top: 1px solid #eee; font-size: 9.5px; line-height: 1.6; color: #b0b0b0; }
   footer.legal b { font-weight: 600; color: #909090; }
@@ -56,17 +64,17 @@
 </head>
 <body>
 
-<div class="nav"><a href="index.html">🎲 D6-Würfeltool</a> · <a href="shadowrun-2036.html">Shadowrun 2036 (Videos)</a> · <a href="3d-player.html">🧭 SR-3D-Player</a> · <a href="https://github.com/KopfKinoK3">GitHub</a></div>
+<nav class="navreihe" aria-label="Hauptnavigation"><a class="navbtn" href="index.html">🎲 Würfeltool</a><a class="navbtn" href="shadowrun-2036.html#kampagne" aria-current="page">Shadowrun 2036</a><a class="navbtn" href="shadowrun-2036.html#battle-maps">Battle-Maps</a><a class="navbtn" href="shadowrun-2036.html#videos">Videos</a><a class="navbtn" href="3d-player.html">3D-Player</a><a class="navbtn" href="https://www.youtube.com/@TinyTacticTales" target="_blank" rel="noopener">YouTube</a><a class="navbtn" href="https://github.com/KopfKinoK3/D6-wuerfeltool" target="_blank" rel="noopener">GitHub</a></nav>
 
 <h1>Shadowrun 2036</h1>
 <div class="subtitle">Die komplette Actual-Play-Kampagne "Blackrock" von <a href="https://www.youtube.com/@TinyTacticTales" target="_blank" rel="noopener">Tiny Tactic Tales</a>: die Folgen, Shorts, Charaktervorstellungen — und die frühen Fantasy-Wurzeln der Runde.</div>
-<div class="intro-text">Shadowrun 2036 ist eine Cyberpunk-Pen-&amp;-Paper-Runde, verlegt ins Ruhrgebiet der nahen Zukunft — zwischen Essen, Kettwig und Oberhausen. Eine Gruppe Schattenläufer gerät nach einem mysteriösen Mordfall am Baldeneysee zwischen die Fronten von Konzernen wie Saeder-Krupp, Magie und Matrix. Gespielt wird live am PC, aufgezeichnet und als Actual Play auf YouTube veröffentlicht — hier stehen alle Folgen, Shorts und Hintergrundvideos chronologisch sortiert.</div>
+<div class="intro-text" id="kampagne">Shadowrun 2036 ist eine Cyberpunk-Pen-&amp;-Paper-Runde, verlegt ins Ruhrgebiet der nahen Zukunft — zwischen Essen, Kettwig und Oberhausen. Eine Gruppe Schattenläufer gerät nach einem mysteriösen Mordfall am Baldeneysee zwischen die Fronten von Konzernen wie Saeder-Krupp, Magie und Matrix. Gespielt wird live am PC, aufgezeichnet und als Actual Play auf YouTube veröffentlicht — hier stehen alle Folgen, Shorts und Hintergrundvideos chronologisch sortiert.</div>
 
 <div class="player-box">
   <b>3D-Karte zum Ausprobieren:</b> Für den <a href="3d-player.html">SR-3D-Player</a> gibt es eine Beispielkarte, die Burg Altendorf in Essen-Burgaltendorf. Du kannst sie hier herunterladen (<a href="karten/Burgaltendorf.glb" download>Burgaltendorf.glb</a>, 6 MB), im Player über "Karte laden" öffnen und die Blickwinkel und Knöpfe testen. Die Datei bleibt auf Deinem Gerät, nichts wird hochgeladen. Mehr dazu in der <a href="https://github.com/KopfKinoK3/D6-wuerfeltool#beispielkarte-burg-altendorf" target="_blank" rel="noopener">Beschreibung auf GitHub</a>.
 </div>
 
-<h2>Kartenübersicht</h2>
+<h2 id="battle-maps">Battle-Maps</h2>
 <div class="section-note">3D-Karten für den SR-3D-Player. Der Player lädt Karten nur aus einer Datei auf Deinem Gerät: Datei herunterladen, dann im <a href="3d-player.html" style="color:#666">SR-3D-Player</a> über "Karte laden" öffnen oder ins Fenster ziehen.</div>
 <div class="karten">
   <div class="karte">
@@ -78,6 +86,8 @@
     <h3>Burg Altendorf</h3>
     <div class="ort">Essen-Altendorf</div>
     <p>Burg Altendorf mit Café und Busbahnhof, Spielort in Shadowrun 2036: Blackrock. Entwurf, 3D-Karte für den SR-3D-Player.</p>
+    <div class="karte-video-label">Video dazu (Short)</div>
+    <a class="short-card karte-short" href="https://www.youtube.com/shorts/Q3N_-8r19dI" target="_blank" rel="noopener"><img class="short-thumb" src="https://i.ytimg.com/vi/Q3N_-8r19dI/mqdefault.jpg" alt="" loading="lazy"><span class="short-title">Gratis Battlemap &amp; 3D-Player Burgaltendorf für Shadowrun &amp; Rollenspiel</span></a>
     <a class="karte-link" href="karten/Burgaltendorf.glb" download>Burgaltendorf.glb laden (6 MB)</a><a class="karte-link" href="3d-player.html">SR-3D-Player öffnen</a>
   </div>
   <div class="karte">
@@ -90,11 +100,13 @@
     <div class="ort">Sassnitz, Insel Rügen</div>
     <p>Großdolmen von Dwasieden, nachgebaut nach den Maßen der Wikipedia (Hünenbett 35 m, Kammer 4,0 x 1,7 m). Gelände, Bäume und die Lage einzelner Steine sind geschätzt. Entwurf für den SR-3D-Player.</p>
     <p class="quelle">Maßangaben: Wikipedia, Großdolmen von Dwasieden (Sprockhoff 472).</p>
+    <div class="karte-video-label">Video dazu (Short)</div>
+    <a class="short-card karte-short" href="https://www.youtube.com/shorts/ykUbs4gskpc" target="_blank" rel="noopener"><img class="short-thumb" src="https://i.ytimg.com/vi/ykUbs4gskpc/mqdefault.jpg" alt="" loading="lazy"><span class="short-title">Dwasieden auf Rügen: 3D-Map vom Großsteingrab</span></a>
     <a class="karte-link" href="karten/Dwasieden.glb" download>Dwasieden.glb laden (6 MB)</a><a class="karte-link" href="3d-player.html">SR-3D-Player öffnen</a>
   </div>
 </div>
 
-<h2>Folgen</h2>
+<h2 id="videos">Folgen</h2>
 <div class="ep-list" id="episodes"></div>
 
 <h2>Shorts</h2>
@@ -165,7 +177,9 @@
     { id: 'MLCxhDrQBr8', title: '3D-Tool für Shadowrun 2036' },
     { id: 'pfeT97VkpGU', title: 'Reise nach Jerusalem um die Sofaplätze' },
     { id: 'MbcGOlPoB2k', title: 'Shadowrunner sterben jung. Motto des Abends' },
-    { id: 'Q3N_-8r19dI', title: 'Free 3D-Player für Shadowrun & Rollenspiel' }
+    { id: 'Q3N_-8r19dI', title: 'Gratis Battlemap & 3D-Player Burgaltendorf für Shadowrun & Rollenspiel' },
+    { id: 'N7ZJaNpaWa0', title: 'Gib dem Geist einen Namen: Kim!' },
+    { id: 'ykUbs4gskpc', title: 'Dwasieden auf Rügen: 3D-Map vom Großsteingrab' }
   ];
 
   // Specials: Trailer, Figurenvorstellungen, Charakterbogen
