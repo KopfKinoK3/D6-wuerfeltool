@@ -85,9 +85,9 @@ Im Ordner [`karten/`](karten/) liegt `Burgaltendorf.glb`, eine Beispielkarte zum
 
 **Hinweis:** Das Modell ist ein Spielhilfsmittel und kein Plan für echte Gebäude.
 
-## Karten: Burg Altendorf und Dwasieden
+## Karten: Burg Altendorf, Dwasieden und Messe Essen
 
-Im Ordner [`karten/`](karten/) liegen zwei 3D-Karten für den SR-3D-Player: `Burgaltendorf.glb` (Burg Altendorf mit Café und Busbahnhof, Essen-Altendorf) und `Dwasieden.glb` (Großdolmen von Dwasieden bei Sassnitz auf Rügen, nach den Maßen der Wikipedia nachgebaut, Gelände, Bäume und einzelne Steine geschätzt). Beide sind Entwürfe. Screenshots der Modelle liegen in `karten/bilder/` und sind auf der Seite [Shadowrun 2036](https://kopfkinok3.github.io/D6-wuerfeltool/shadowrun-2036.html) in der Kartenübersicht zu sehen.
+Im Ordner [`karten/`](karten/) liegen drei 3D-Karten für den SR-3D-Player: `Burgaltendorf.glb` (Burg Altendorf mit Café und Busbahnhof, Essen-Altendorf) und `Dwasieden.glb` (Großdolmen von Dwasieden bei Sassnitz auf Rügen, nach den Maßen der Wikipedia nachgebaut, Gelände, Bäume und einzelne Steine geschätzt). `Messe-Essen.glb` zeigt das Konzernviertel am Grugapark mit Hochhäusern bis 139 m (Entwurf, nicht Kanon, Maße: Geobasis NRW und OpenStreetMap, ODbL). Alle drei sind Entwürfe. Screenshots der Modelle liegen in `karten/bilder/` und sind auf der Seite [Shadowrun 2036](https://kopfkinok3.github.io/D6-wuerfeltool/shadowrun-2036.html) in der Kartenübersicht zu sehen.
 
 Impressum: [impressum.html](impressum.html)
 
