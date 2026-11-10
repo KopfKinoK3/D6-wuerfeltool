@@ -53,6 +53,19 @@
              opacity: 0; transition: opacity .25s; pointer-events: none; }
   #meldung.zeigen { opacity: 1; }
 
+  /* Menüs in der Bühne wie in der 3D-Lage: „☰ Animation“ unten rechts, „👓 AR“ unten links, das Menü klappt nach oben auf */
+  .feld { position: absolute; bottom: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 5; max-width: calc(50% - 18px); }
+  #aniFeld { right: 12px; align-items: flex-end; }
+  #arFeld { left: 12px; align-items: flex-start; }
+  .feld[hidden] { display: none; }
+  .feld .menue { display: flex; flex-direction: column; gap: 4px; padding: 6px; background: rgba(255,255,255,.97); border: 1px solid var(--rand);
+                 border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.12); overflow-y: auto; max-width: 100%; }
+  .feld .menue[hidden] { display: none; }
+  .feld .menue .knopf { display: flex; justify-content: space-between; gap: 10px; white-space: nowrap; }
+  .feld .menue .knopf .taste { color: var(--leise); font-size: 11.5px; }
+  .feld .menue .knopf.an .taste { color: var(--akzent-text); }
+  .feld .menue .trenner { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: #999; font-weight: 700; padding: 4px 4px 0; }
+  .feld > .knopf { box-shadow: 0 2px 8px rgba(0,0,0,.12); }
   aside { width: 260px; flex-shrink: 0; border-left: 1px solid var(--rand); background: var(--panel); overflow-y: auto; padding: 12px; }
   aside section + section { margin-top: 18px; }
   aside h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .6px; color: #999; font-weight: 700; margin-bottom: 8px; }
@@ -100,26 +113,29 @@
     <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd> fahren · <kbd>-</kbd> / rechtes <kbd>⇧</kbd> drehen · <kbd>1</kbd> bis <kbd>9</kbd> Station · <kbd>0</kbd> Gesamtansicht
   </p>
   <button class="knopf haupt" id="btnLaden">Karte laden</button>
-  <input type="file" id="datei" accept=".glb,model/gltf-binary" hidden>
+  <input type="file" id="datei" accept=".glb,.json,model/gltf-binary,application/json" multiple hidden>
 </header>
 <main>
   <div id="buehne" tabindex="0">
     <div id="leer">
       <strong>GLB-Karte hierher ziehen oder „Karte laden“ wählen</strong>
-      <span>Die Datei bleibt auf deinem Gerät, nichts wird hochgeladen.</span>
+      <span>Optional dazu die Datei <em>Karte.ar.json</em> mit AR-Infos, beide zusammen wählen oder ziehen.<br>Die Dateien bleiben auf deinem Gerät, nichts wird hochgeladen.</span>
     </div>
     <div id="meldung"></div>
+    <div class="feld" id="arFeld" hidden>
+      <div class="menue" id="arMenue" hidden></div>
+      <button class="knopf" id="btnAr" aria-expanded="false" title="AR-Infos der Karte: Menü auf- und zuklappen">👓 AR</button>
+    </div>
+    <div class="feld" id="aniFeld" hidden>
+      <div class="menue" id="animationen" hidden></div>
+      <button class="knopf" id="btnAni" aria-expanded="false" title="Animationen der Karte: Menü auf- und zuklappen">☰ Animation</button>
+    </div>
   </div>
   <aside>
     <section>
       <h2>Stationen</h2>
       <div class="liste" id="stationen"></div>
       <p class="hinweis" id="stationenHinweis"></p>
-    </section>
-    <section>
-      <h2>Animationen</h2>
-      <div class="liste" id="animationen"></div>
-      <p class="hinweis" id="animationenHinweis">Noch keine Karte geladen.</p>
     </section>
     <section id="steuerungUnten" hidden>
       <h2>Steuerung</h2>
@@ -183,15 +199,25 @@ function meldung(text) {
 /* ---------- Laden: FileReader + parse, nicht loader.load(url), damit es auch über file:// geht ---------- */
 const datei = document.getElementById('datei');
 document.getElementById('btnLaden').onclick = () => datei.click();
-datei.onchange = () => { if (datei.files[0]) dateiLaden(datei.files[0]); datei.value = ''; };
+datei.onchange = () => { if (datei.files.length) dateienVerteilen([...datei.files]); datei.value = ''; };
 ['dragenter', 'dragover'].forEach(ev => document.body.addEventListener(ev, e => { e.preventDefault(); buehne.classList.add('ziel'); }));
 document.body.addEventListener('dragleave', e => { if (!e.relatedTarget) buehne.classList.remove('ziel'); });
 document.body.addEventListener('drop', e => {
   e.preventDefault(); buehne.classList.remove('ziel');
-  const f = e.dataTransfer.files[0]; if (f) dateiLaden(f);
+  if (e.dataTransfer.files.length) dateienVerteilen([...e.dataTransfer.files]);
 });
 
-function dateiLaden(file) {
+/* Eine GLB, dazu optional eine ar.json (beide zusammen oder die ar.json später zu einer schon geladenen Karte) */
+function dateienVerteilen(dateien) {
+  const glb = dateien.find(f => /\.glb$/i.test(f.name));
+  const ar = dateien.find(f => /\.json$/i.test(f.name));
+  if (!glb && !ar) { meldung('Bitte eine .glb-Datei wählen, dazu optional die .ar.json'); return; }
+  if (glb) dateiLaden(glb, ar);
+  else if (!modell) meldung('Erst die Karte (.glb) laden, dann die ar.json');
+  else arDateiLesen(ar);
+}
+
+function dateiLaden(file, arDatei) {
   if (!/\.glb$/i.test(file.name)) { meldung('Bitte eine .glb-Datei wählen'); return; }
   meldung(`Lade ${file.name} …`);
   const fr = new FileReader();
@@ -199,7 +225,7 @@ function dateiLaden(file) {
   fr.onload = () => {
     try {
       loader.parse(fr.result, '', gltf => {
-        try { karteSetzen(gltf, file.name.replace(/\.glb$/i, '')); }
+        try { karteSetzen(gltf, file.name.replace(/\.glb$/i, '')); if (arDatei) arDateiLesen(arDatei); }
         catch (e) { console.error(e); meldung('Die Karte ließ sich nicht anzeigen'); }
       }, e => { console.error(e); meldung('Die Karte ließ sich nicht lesen'); });
     } catch (e) { console.error(e); meldung('Die Karte ließ sich nicht lesen'); }
@@ -210,6 +236,7 @@ function dateiLaden(file) {
 function karteLeeren() {
   if (mixer) { mixer.stopAllAction(); mixer = null; }
   spuren = []; fahrzeuge = [];
+  arLeeren();
   if (!modell) return;
   scene.remove(modell);
   modell.traverse(k => {
@@ -409,16 +436,28 @@ function fahrzeugAnzeigen(fz) {
 }
 
 /* ---------- Animationen: eingebaute Spuren (je ein Knopf Abspielen/Stopp) und bewegliche Teile ---------- */
+/* Wie in der 3D-Lage: Knopf „☰ Animation“ unten rechts, das Menü klappt nach oben auf, ein Klick auf einen Eintrag startet ihn und schließt das Menü */
 const animEl = document.getElementById('animationen');
-const animHinweis = document.getElementById('animationenHinweis');
+const aniFeld = document.getElementById('aniFeld'), btnAni = document.getElementById('btnAni');
+function menueSchalten(menue, knopf, offen) {
+  menue.hidden = !offen;
+  knopf.setAttribute('aria-expanded', String(offen));
+  if (offen) {
+    const r = knopf.getBoundingClientRect(), b = buehne.getBoundingClientRect();
+    menue.style.maxHeight = Math.round(Math.max(120, Math.min(b.height * 0.7, r.top - b.top - 12))) + 'px';
+  }
+}
+const aniZu = () => menueSchalten(animEl, btnAni, false);
+btnAni.onclick = () => { const auf = animEl.hidden; arZu(); menueSchalten(animEl, btnAni, auf); };
 function animationenSetzen(clips) {
   animEl.innerHTML = '';
+  aniZu();
   spuren = [];
   fahrzeugeLesen();
   fahrzeuge.forEach(fz => {
     fz.knopf = document.createElement('button');
     fz.knopf.className = 'knopf';
-    fz.knopf.onclick = () => fahrzeugStarten(fz);
+    fz.knopf.onclick = () => { aniZu(); fahrzeugStarten(fz); };
     animEl.appendChild(fz.knopf);
     fahrzeugAnzeigen(fz);
   });
@@ -428,12 +467,12 @@ function animationenSetzen(clips) {
     const b = document.createElement('button');
     b.className = 'knopf';
     const sp = { clip, aktion, knopf: b, laeuft: false };
-    b.onclick = () => spurSchalten(sp);
+    b.onclick = () => { aniZu(); spurSchalten(sp); };
     animEl.appendChild(b);
     spuren.push(sp);
     spurAnzeigen(sp);
   });
-  animHinweis.textContent = clips.length || fahrzeuge.length ? '' : 'Diese Karte hat keine Animationen und keine beweglichen Teile.';
+  aniFeld.hidden = !(clips.length || fahrzeuge.length);
   document.body.dataset.animationen = clips.length;
 }
 function spurSchalten(sp) {
@@ -447,6 +486,210 @@ function spurAnzeigen(sp) {
   sp.knopf.firstChild.textContent = name;
   sp.knopf.classList.toggle('an', sp.laeuft);
   document.body.dataset.laeuft = spuren.filter(s => s.laeuft).map(s => s.clip.name).join(',');
+}
+
+/* ---------- AR-Infos aus <Karte>.ar.json (Format und Logik wie in der 3D-Lage) ----------
+   Kein echtes AR: Die Tags sind Schilder in der Szene, die sich ein- und ausblenden lassen. Je Tag { x, z, sym, text, gruppe?, sicht?, offen? }.
+   x, z in Metern in Kartenkoordinaten, Norden ist −z. Das Schild steht 5 m über dem höchsten Teil der Karte an der Stelle, der Strich reicht
+   bis zum Boden. Ein Tag mit sicht { richtung (0 = Norden, im Uhrzeigersinn), winkel, weite_m } zeichnet seinen Kegel flach auf den Boden.
+   Alle Tags der Datei werden gezeigt: für den Player sind das eigens erstellte Dateien, nicht die Dateien der Spielleitung. */
+const AR_SYMBOLE = { info: 'ℹ️', werbung: '📢', warnung: '⚠️', kein: '📵', sin: '🆔', falle: '🪤', kamera: '📷', sensor: '📶' };
+const AR_UEBER = 5, AR_PX = 28;
+const arFeld = document.getElementById('arFeld'), arMenue = document.getElementById('arMenue'), btnAr = document.getElementById('btnAr');
+const arGruppe3d = new THREE.Group();
+scene.add(arGruppe3d);
+let arTags = [];          // { tag, g: Group, gruppe }
+let arAn = true;          // Hauptschalter
+let arGruppenAus = new Set();
+let arName = '';
+const arZu = () => menueSchalten(arMenue, btnAr, false);
+btnAr.onclick = () => { const auf = arMenue.hidden; aniZu(); menueSchalten(arMenue, btnAr, auf); };
+buehne.addEventListener('pointerdown', e => { if (!e.target.closest('.feld')) { arZu(); aniZu(); } });
+
+function arLeeren() {
+  arGruppe3d.children.slice().forEach(g => {
+    arGruppe3d.remove(g);
+    g.traverse(k => {
+      if (k.geometry) k.geometry.dispose();
+      if (k.material) { if (k.material.map) k.material.map.dispose(); k.material.dispose(); }
+    });
+  });
+  arTags = []; arGruppenAus = new Set(); arAn = true; arName = '';
+  arFeld.hidden = true; arZu(); arMenue.innerHTML = '';
+  document.body.dataset.ar = '0';
+}
+
+/* Schild als Sprite mit Text */
+function arSchild(text) {
+  const c = document.createElement('canvas'), dpi = 3, pad = 11 * dpi, hoehe = 26 * dpi;
+  let g = c.getContext('2d');
+  g.font = `700 ${15 * dpi}px system-ui, sans-serif`;
+  c.width = Math.ceil(g.measureText(text).width) + pad * 2;
+  c.height = hoehe + 6 * dpi;
+  g = c.getContext('2d');
+  const w = c.width, h = c.height, r = 7 * dpi;
+  g.beginPath();
+  g.moveTo(r, 0); g.lineTo(w - r, 0); g.quadraticCurveTo(w, 0, w, r);
+  g.lineTo(w, h - r); g.quadraticCurveTo(w, h, w - r, h);
+  g.lineTo(r, h); g.quadraticCurveTo(0, h, 0, h - r);
+  g.lineTo(0, r); g.quadraticCurveTo(0, 0, r, 0);
+  g.closePath();
+  g.fillStyle = 'rgba(255,255,255,0.95)'; g.fill();
+  g.lineWidth = 3 * dpi; g.strokeStyle = '#0891b2'; g.stroke();
+  g.font = `700 ${15 * dpi}px system-ui, sans-serif`;
+  g.fillStyle = '#1b1f24'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(text, w / 2, h / 2 + 1);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false }));
+  spr.userData.seite = w / h;
+  spr.renderOrder = 30;
+  return spr;
+}
+
+/* Höchster und tiefster Treffer eines senkrechten Strahls auf die Karte; bewegliche Teile zählen nicht (sie fahren weg) */
+const arStrahl = new THREE.Raycaster();
+let arNetze = null;
+function arHoehen(x, z) {
+  if (!arNetze) {
+    const fz = new Set();
+    fahrzeuge.forEach(f => f.obj.traverse(o => fz.add(o)));
+    arNetze = [];
+    modell.traverseVisible(o => { if (o.isMesh && !fz.has(o)) arNetze.push(o); });
+  }
+  arStrahl.set(new THREE.Vector3(x, box.max.y + 50, z), new THREE.Vector3(0, -1, 0));
+  arStrahl.near = 0; arStrahl.far = box.max.y - box.min.y + 200;
+  const t = arNetze.length ? arStrahl.intersectObjects(arNetze, false) : [];
+  return t.length ? { oben: t[0].point.y, boden: t[t.length - 1].point.y } : { oben: box.min.y, boden: box.min.y };
+}
+
+function arBauen(tag) {
+  const g = new THREE.Group();
+  const { oben, boden } = arHoehen(tag.x, tag.z);
+  const h = oben - boden + AR_UEBER;
+  g.position.set(tag.x, boden, tag.z);
+  const stab = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, h, 8),
+    new THREE.MeshBasicMaterial({ color: 0x0891b2, transparent: true, opacity: 0.75, depthWrite: false }));
+  stab.position.y = h / 2; stab.renderOrder = 6; g.add(stab);
+  const si = tag.sicht, weite = si ? +si.weite_m : 0, winkel = si ? +si.winkel : 0;
+  if (weite > 0 && winkel > 0 && Number.isFinite(+si.richtung)) {
+    /* Norden ist −z. Nach der Drehung auf den Boden liegt der Kreiswinkel t bei (cos t, −sin t), Richtung r im Uhrzeigersinn bei (sin r, −cos r): t = 90° − r */
+    const w = THREE.MathUtils.degToRad(Math.min(360, winkel)), mitte = THREE.MathUtils.degToRad(90 - +si.richtung);
+    const k = new THREE.Mesh(new THREE.CircleGeometry(weite, 32, mitte - w / 2, w),
+      new THREE.MeshBasicMaterial({ color: 0x378add, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false }));
+    k.rotation.x = -Math.PI / 2; k.position.y = 0.07; k.renderOrder = 4; g.add(k);
+  }
+  const s = arSchild(`${AR_SYMBOLE[tag.sym] || AR_SYMBOLE.info} ${tag.text || 'Info'}`);
+  s.userData.h = h; s.scale.set(1.6 * s.userData.seite, 1.6, 1); s.position.y = h + 0.9;
+  g.add(s); g.userData.schild = s;
+  return g;
+}
+
+function arDateiLesen(file) {
+  const fr = new FileReader();
+  fr.onerror = () => meldung('Die ar.json ließ sich nicht lesen');
+  fr.onload = () => {
+    let d;
+    try { d = JSON.parse(fr.result); } catch (e) { meldung('Die ar.json ist kein gültiges JSON'); return; }
+    arSetzen(d, file.name);
+  };
+  fr.readAsText(file);
+}
+const karteKern = n => String(n || '').replace(/\.glb$/i, '').trim().toLowerCase();
+function arSetzen(d, dateiname) {
+  if (!d || !Array.isArray(d.tags)) { meldung('Die ar.json hat keine Liste „tags“'); return; }
+  if (d.karte && karteKern(d.karte) !== karteKern(document.body.dataset.karte)) {
+    meldung(`Die ar.json gehört zu „${d.karte}“, geladen ist „${document.body.dataset.karte}“`); return;
+  }
+  arLeeren();
+  arName = dateiname;
+  arNetze = null;
+  modell.updateMatrixWorld(true);
+  d.tags.forEach(tag => {
+    if (!Number.isFinite(+tag.x) || !Number.isFinite(+tag.z)) return;
+    tag = { ...tag, x: +tag.x, z: +tag.z };
+    const g = arBauen(tag);
+    arGruppe3d.add(g);
+    arTags.push({ tag, g, gruppe: tag.gruppe ? String(tag.gruppe) : '' });
+  });
+  arMenueBauen();
+  arSichtbarkeit();
+  arFeld.hidden = !arTags.length;
+  meldung(arTags.length ? `👓 ${arTags.length} AR-Infos aus ${dateiname}` : 'Die ar.json enthält keine Tags');
+}
+
+function arSichtbarkeit() {
+  arTags.forEach(t => { t.g.visible = arAn && !(t.gruppe && arGruppenAus.has(t.gruppe)); });
+  document.body.dataset.ar = arAn ? String(arTags.filter(t => t.g.visible).length) : '0';
+  document.body.dataset.arGruppenAus = [...arGruppenAus].join(',');
+}
+/* Menü: oben „AR-Infos an/aus“, darunter je Gruppe ein Ein/Aus. Tags ohne Gruppe hängen nur am Hauptschalter. */
+function arMenueBauen() {
+  arMenue.innerHTML = '';
+  const zeile = (text, an, klick) => {
+    const b = document.createElement('button');
+    b.className = 'knopf' + (an ? ' an' : '');
+    b.innerHTML = '<span></span><span class="taste"></span>';
+    b.firstChild.textContent = text; b.lastChild.textContent = an ? 'an' : 'aus';
+    b.onclick = klick;
+    arMenue.appendChild(b);
+  };
+  zeile('Alle AR-Infos', arAn, () => { arAn = !arAn; arMenueBauen(); arSichtbarkeit(); });
+  const gruppen = [...new Set(arTags.map(t => t.gruppe).filter(Boolean))];
+  if (gruppen.length) {
+    const h = document.createElement('div'); h.className = 'trenner'; h.textContent = 'Gruppen'; arMenue.appendChild(h);
+    gruppen.forEach(n => {
+      const anzahl = arTags.filter(t => t.gruppe === n).length;
+      zeile(`${n} (${anzahl})`, !arGruppenAus.has(n), () => {
+        if (arGruppenAus.has(n)) arGruppenAus.delete(n); else arGruppenAus.add(n);
+        arMenueBauen(); arSichtbarkeit();
+      });
+    });
+  }
+  /* Vereinfachte AR-Liste: nur Infotafeln und Kameras. Ein Klick fährt zum Schild und schaltet es ein, falls es aus war. */
+  /* Kameras erkennt der Player am Symbol, am Sichtkegel oder an der Gruppe „Kamera“ (die Burg nutzt Symbol Warnung mit Text 📷) */
+  const istKamera = t => t.tag.sym === 'kamera' || !!t.tag.sicht || /^kamera/i.test(t.gruppe);
+  const liste = arTags.filter(t => t.tag.sym === 'info' || !t.tag.sym || istKamera(t));
+  if (liste.length) {
+    const h = document.createElement('div'); h.className = 'trenner'; h.textContent = 'Infotafeln und Kameras'; arMenue.appendChild(h);
+    liste.forEach(t => {
+      const b = document.createElement('button');
+      b.className = 'knopf';
+      b.innerHTML = '<span></span><span class="taste">▶</span>';
+      /* Besteht der Text nur aus Symbolen (z. B. 💡), hilft der Gruppenname */
+      const text = t.tag.text || 'Info', nurSymbol = !/[A-Za-zÄÖÜäöüß0-9]/.test(text);
+      b.firstChild.textContent = `${AR_SYMBOLE[t.tag.sym] || AR_SYMBOLE.info} ${text}${nurSymbol && t.gruppe ? ' · ' + t.gruppe : ''}`;
+      b.onclick = () => arAnfahren(t);
+      arMenue.appendChild(b);
+    });
+  }
+  btnAr.textContent = `👓 AR (${arTags.length})`;
+  /* War das Menü offen, bleibt es nach dem Umschalten offen; der Platz über dem Knopf wird neu gemessen */
+  menueSchalten(arMenue, btnAr, !arMenue.hidden);
+}
+function arAnfahren(t) {
+  if (!arAn || (t.gruppe && arGruppenAus.has(t.gruppe))) { arAn = true; arGruppenAus.delete(t.gruppe); arSichtbarkeit(); }
+  arMenueBauen();
+  arZu();
+  const ziel = t.g.position.clone(); ziel.y += Math.min(3, t.g.userData.schild.userData.h * 0.5);
+  const dir = new THREE.Vector3(0.20, 0.84, 0.50).normalize();
+  fahre(ziel.clone().addScaledVector(dir, 35), ziel, 3000);
+  markiere('');
+}
+/* Schilder bleiben gleich groß auf dem Bildschirm, wie in der 3D-Lage (jedes Bild) */
+const _wp = new THREE.Vector3();
+function arSkalieren() {
+  if (!arTags.length) return;
+  const hp = renderer.domElement.clientHeight || 1;
+  const k = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * (AR_PX / hp);
+  for (const t of arTags) {
+    if (!t.g.visible) continue;
+    const s = t.g.userData.schild;
+    s.getWorldPosition(_wp);
+    const hh = Math.max(0.9, Math.min(7, camera.position.distanceTo(_wp) * k));
+    s.scale.set(hh * s.userData.seite, hh, 1);
+    s.position.y = s.userData.h + hh * 0.6;
+  }
 }
 
 /* ---------- Tastatur (Vorbild: kameraSteuern in der 3D-Lage) ----------
@@ -530,6 +773,7 @@ renderer.setAnimationLoop(() => {
     if (fahrt.t >= 1) fahrt = null;
   }
   if (!fahrt) controls.update();
+  arSkalieren();
   renderer.render(scene, camera);
   document.body.dataset.kamera = camera.position.toArray().map(v => v.toFixed(1)).join(',');
 });
@@ -546,7 +790,7 @@ schmal.addEventListener('change', tastenStellen);
 tastenStellen();
 
 stationenBauen();
-window.player = { stationen: () => stationen, spuren: () => spuren, dateiLaden };   /* für eigene Tests in der Konsole */
+window.player = { stationen: () => stationen, spuren: () => spuren, dateiLaden, dateienVerteilen, arTags: () => arTags };   /* für eigene Tests in der Konsole */
 </script>
 </body>
 </html>

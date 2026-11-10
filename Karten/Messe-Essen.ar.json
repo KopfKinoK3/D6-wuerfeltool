@@ -1,0 +1,49 @@
+{
+ "karte": "Messe-Essen.glb",
+ "hoehe_m": 2,
+ "tags": [
+  {
+   "x": 85.0,
+   "z": -265.0,
+   "sym": "info",
+   "text": "🚪",
+   "offen": true,
+   "gruppe": "Zugang"
+  },
+  {
+   "x": -89.1,
+   "z": 85.0,
+   "sym": "info",
+   "text": "🅿️",
+   "offen": true,
+   "gruppe": "Zugang"
+  },
+  {
+   "x": -300.0,
+   "z": 10.0,
+   "y": 116.8,
+   "sym": "info",
+   "text": "🚁",
+   "offen": true,
+   "gruppe": "Landeplatz"
+  },
+  {
+   "x": -300.0,
+   "z": 70.0,
+   "y": 74.5,
+   "sym": "info",
+   "text": "🚁",
+   "offen": true,
+   "gruppe": "Landeplatz"
+  },
+  {
+   "x": -120.0,
+   "z": -50.0,
+   "y": 80.2,
+   "sym": "info",
+   "text": "🚁",
+   "offen": true,
+   "gruppe": "Landeplatz"
+  }
+ ]
+}

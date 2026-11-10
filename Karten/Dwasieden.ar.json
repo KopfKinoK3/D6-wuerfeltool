@@ -1,0 +1,14 @@
+{
+ "karte": "Dwasieden.glb",
+ "hoehe_m": 2,
+ "tags": [
+  {
+   "x": -8.77,
+   "z": 8.77,
+   "sym": "info",
+   "text": "🪨",
+   "offen": true,
+   "gruppe": "Hinweis"
+  }
+ ]
+}

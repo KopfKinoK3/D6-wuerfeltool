@@ -1,0 +1,580 @@
+{
+ "karte": "Burgaltendorf.glb",
+ "hoehe_m": 5,
+ "tags": [
+  {
+   "x": 2.9,
+   "z": -36.72,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 0,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -5.98,
+   "z": -8.0,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 180,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -25.59,
+   "z": -8.0,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 180,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -30.99,
+   "z": -22.61,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 270,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -78.85,
+   "z": 22.81,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 0,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -78.73,
+   "z": 22.81,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 270,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -38.07,
+   "z": 60.74,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 90,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": 31.29,
+   "z": -47.41,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 180,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -0.16,
+   "z": -47.41,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 180,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -15.69,
+   "z": 39.66,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 236,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -8.28,
+   "z": 34.66,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 56,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": 4.09,
+   "z": 39.09,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 90,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": 7.86,
+   "z": 44.14,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 90,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": 11.62,
+   "z": 49.19,
+   "sym": "warnung",
+   "text": "📷",
+   "offen": true,
+   "gruppe": "Kamera",
+   "sicht": {
+    "richtung": 90,
+    "winkel": 90,
+    "weite_m": 30
+   }
+  },
+  {
+   "x": -30.0,
+   "z": -6.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -8.0,
+   "z": -3.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": 4.0,
+   "z": -10.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -22.0,
+   "z": 42.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -4.0,
+   "z": 50.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": 10.0,
+   "z": 46.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -47.83,
+   "z": -51.69,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -52.0,
+   "z": -32.58,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -57.52,
+   "z": -15.73,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -61.24,
+   "z": 27.53,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -38.76,
+   "z": 40.45,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -17.42,
+   "z": 53.37,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -36.0,
+   "z": -1.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -14.0,
+   "z": 5.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": 2.0,
+   "z": -1.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": 6.95,
+   "z": -8.76,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -30.0,
+   "z": 50.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": 2.0,
+   "z": 58.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": 16.0,
+   "z": 52.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -41.0,
+   "z": -11.0,
+   "sym": "info",
+   "text": "💡",
+   "offen": true,
+   "gruppe": "Laterne"
+  },
+  {
+   "x": -72.85,
+   "z": -37.03,
+   "sym": "werbung",
+   "text": "🔧 KFZ",
+   "offen": true,
+   "gruppe": "Gebäude"
+  },
+  {
+   "x": -58.48,
+   "z": 41.8,
+   "sym": "werbung",
+   "text": "🛒",
+   "offen": true,
+   "gruppe": "Gebäude"
+  },
+  {
+   "x": 15.56,
+   "z": -54.1,
+   "sym": "info",
+   "text": "🏠",
+   "offen": true,
+   "gruppe": "Gebäude"
+  },
+  {
+   "x": 40.72,
+   "z": -56.64,
+   "sym": "info",
+   "text": "🏠",
+   "offen": true,
+   "gruppe": "Gebäude"
+  },
+  {
+   "x": -17.35,
+   "z": 36.44,
+   "sym": "info",
+   "text": "🚏",
+   "offen": true,
+   "gruppe": "Gebäude"
+  },
+  {
+   "x": -15.79,
+   "z": -8.2,
+   "sym": "werbung",
+   "text": "☕",
+   "offen": true,
+   "gruppe": "Café"
+  },
+  {
+   "x": -8.0,
+   "z": -36.65,
+   "sym": "warnung",
+   "text": "⛔ Anlieferung",
+   "offen": true,
+   "gruppe": "Café"
+  },
+  {
+   "x": -33.5,
+   "z": -14.8,
+   "sym": "werbung",
+   "text": "🍺",
+   "offen": true,
+   "gruppe": "Café"
+  },
+  {
+   "x": 32.63,
+   "z": 10.64,
+   "sym": "info",
+   "text": "🏰 Turm",
+   "offen": true,
+   "gruppe": "Burg"
+  },
+  {
+   "x": 19.36,
+   "z": -6.07,
+   "sym": "info",
+   "text": "🏰",
+   "offen": true,
+   "gruppe": "Burg"
+  },
+  {
+   "x": 11.14,
+   "z": -14.51,
+   "sym": "info",
+   "text": "ℹ️",
+   "offen": true,
+   "gruppe": "Burg"
+  },
+  {
+   "x": 7.96,
+   "z": -9.42,
+   "sym": "info",
+   "text": "ℹ️",
+   "offen": true,
+   "gruppe": "Burg"
+  },
+  {
+   "x": -5.06,
+   "z": 14.38,
+   "sym": "warnung",
+   "text": "⚠️ Brunnen",
+   "offen": true,
+   "gruppe": "Burg"
+  },
+  {
+   "x": 19.41,
+   "z": -5.1,
+   "sym": "warnung",
+   "text": "⚠️ Graben",
+   "offen": true,
+   "gruppe": "Burg"
+  },
+  {
+   "x": -3.77,
+   "z": 44.95,
+   "sym": "info",
+   "text": "🚏 1",
+   "offen": true,
+   "gruppe": "Busbahnhof"
+  },
+  {
+   "x": 0.0,
+   "z": 50.0,
+   "sym": "info",
+   "text": "🚏 2",
+   "offen": true,
+   "gruppe": "Busbahnhof"
+  },
+  {
+   "x": 3.77,
+   "z": 55.05,
+   "sym": "info",
+   "text": "🚏 3",
+   "offen": true,
+   "gruppe": "Busbahnhof"
+  },
+  {
+   "x": 2.25,
+   "z": 40.47,
+   "sym": "info",
+   "text": "🎫",
+   "offen": true,
+   "gruppe": "Busbahnhof"
+  },
+  {
+   "x": 5.23,
+   "z": 57.02,
+   "sym": "werbung",
+   "text": "🚌",
+   "offen": true,
+   "gruppe": "Busbahnhof"
+  },
+  {
+   "x": -25.84,
+   "z": -43.6,
+   "sym": "sin",
+   "text": "🚗",
+   "offen": true,
+   "gruppe": "Auto"
+  },
+  {
+   "x": -22.47,
+   "z": -43.6,
+   "sym": "sin",
+   "text": "🚗",
+   "offen": true,
+   "gruppe": "Auto"
+  },
+  {
+   "x": -19.1,
+   "z": -43.6,
+   "sym": "sin",
+   "text": "🚗",
+   "offen": true,
+   "gruppe": "Auto"
+  },
+  {
+   "x": -15.73,
+   "z": -43.6,
+   "sym": "sin",
+   "text": "🚗",
+   "offen": true,
+   "gruppe": "Auto"
+  },
+  {
+   "x": -12.36,
+   "z": -43.6,
+   "sym": "sin",
+   "text": "🚗",
+   "offen": true,
+   "gruppe": "Auto"
+  },
+  {
+   "x": -8.99,
+   "z": -43.6,
+   "sym": "sin",
+   "text": "🚗",
+   "offen": true,
+   "gruppe": "Auto"
+  },
+  {
+   "x": -5.62,
+   "z": -43.6,
+   "sym": "sin",
+   "text": "🚗",
+   "offen": true,
+   "gruppe": "Auto"
+  },
+  {
+   "x": 40.7,
+   "z": -47.8,
+   "sym": "kein",
+   "text": "📵",
+   "offen": true,
+   "gruppe": "Garten"
+  },
+  {
+   "x": -13.6,
+   "z": -37.27,
+   "sym": "info",
+   "text": "🗑️",
+   "offen": true,
+   "gruppe": "Tonnen"
+  },
+  {
+   "x": -45.4,
+   "z": -49.66,
+   "sym": "info",
+   "text": "♻️",
+   "offen": true,
+   "gruppe": "Tonnen"
+  }
+ ]
+}
